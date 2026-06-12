@@ -14,6 +14,10 @@ CHANGELOG = PACKAGE_ROOT / "CHANGELOG.md"
 RELEASE_CHECKLIST = PACKAGE_ROOT / "RELEASE_CHECKLIST.md"
 README = PACKAGE_ROOT / "README.md"
 INSTALL_DOC = PACKAGE_ROOT / "docs" / "install-and-configuration.md"
+PUBLIC_REPO = "https://github.com/MohammedGhazal09/linkedin-apply-assistant"
+NPM_REPOSITORY = f"git+{PUBLIC_REPO}.git"
+HOMEPAGE = f"{PUBLIC_REPO}#readme"
+ISSUES = f"{PUBLIC_REPO}/issues"
 
 
 def _pyproject() -> dict[str, object]:
@@ -88,22 +92,27 @@ def test_distribution_docs_and_release_surfaces_include_identity() -> None:
     )
 
 
-def test_future_registry_and_remote_wording_is_labeled() -> None:
+def test_public_source_and_pending_registry_wording_is_labeled() -> None:
     readme = README.read_text(encoding="utf-8").lower()
     install_doc = INSTALL_DOC.read_text(encoding="utf-8").lower()
 
-    assert "does not claim a live public repository" in readme
-    assert "future git clone shape" in install_doc
-    assert "future zip/tarball archive shape" in install_doc
+    assert PUBLIC_REPO.lower() in readme
+    assert f"git clone {PUBLIC_REPO.lower()}.git" in install_doc
+    assert "<future-public-repository-url>" not in install_doc
+    assert "does not claim a live public repository" not in readme
     assert "after a later approved npm registry release" in install_doc
     assert "until that release exists" in install_doc
-    assert "git clone <future-public-repository-url>" in install_doc
-    assert "git clone https://" not in install_doc
 
 
-def test_package_json_omits_live_repository_metadata_until_public_repo_exists() -> None:
+def test_package_metadata_points_to_public_repository() -> None:
     package = _package_json()
+    pyproject_project = _pyproject()["project"]
 
-    assert "repository" not in package
-    assert "homepage" not in package
-    assert "bugs" not in package
+    assert package["repository"] == {"type": "git", "url": NPM_REPOSITORY}
+    assert package["homepage"] == HOMEPAGE
+    assert package["bugs"] == {"url": ISSUES}
+    assert pyproject_project["urls"] == {
+        "Homepage": HOMEPAGE,
+        "Repository": PUBLIC_REPO,
+        "Issues": ISSUES,
+    }

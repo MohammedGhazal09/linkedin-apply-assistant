@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -162,11 +163,19 @@ def write_audit_requirements() -> Path:
         return Path(handle.name)
 
 
-def prepare_gate_command(gate: Gate) -> tuple[list[str], str, Path | None]:
+def _cleanup_temp_path(path: Path) -> None:
+    if path.is_dir():
+        shutil.rmtree(path, ignore_errors=True)
+    else:
+        path.unlink(missing_ok=True)
+
+
+def prepare_gate_command(gate: Gate) -> tuple[list[str], str, tuple[Path, ...]]:
     if gate.name != "dependency audit":
-        return _command_to_executable(gate.command), gate.display_command, None
+        return _command_to_executable(gate.command), gate.display_command, ()
 
     requirements_file = write_audit_requirements()
+    cache_dir = Path(tempfile.mkdtemp(prefix="linkedin-apply-assistant-pip-audit-cache-"))
     command = (
         "python",
         "-m",
@@ -176,8 +185,10 @@ def prepare_gate_command(gate: Gate) -> tuple[list[str], str, Path | None]:
         "--no-deps",
         "--progress-spinner",
         "off",
+        "--cache-dir",
+        str(cache_dir),
     )
-    return _command_to_executable(command), " ".join(command), requirements_file
+    return _command_to_executable(command), " ".join(command), (requirements_file, cache_dir)
 
 
 def list_gates(gates: Sequence[Gate]) -> None:
@@ -186,9 +197,9 @@ def list_gates(gates: Sequence[Gate]) -> None:
 
 
 def run_gate(gate: Gate) -> int:
-    cleanup_path: Path | None = None
+    cleanup_paths: tuple[Path, ...] = ()
     try:
-        executable_command, display_command, cleanup_path = prepare_gate_command(gate)
+        executable_command, display_command, cleanup_paths = prepare_gate_command(gate)
         print(f"\n== {gate.name} ==", flush=True)
         print(f"$ {display_command}", flush=True)
         result = subprocess.run(executable_command, cwd=PACKAGE_ROOT, check=False)
@@ -197,8 +208,8 @@ def run_gate(gate: Gate) -> int:
         print(f"\nGate failed: {gate.name}: {exc}", file=sys.stderr)
         return 1
     finally:
-        if cleanup_path is not None:
-            cleanup_path.unlink(missing_ok=True)
+        for path in cleanup_paths:
+            _cleanup_temp_path(path)
 
 
 

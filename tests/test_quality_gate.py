@@ -79,3 +79,28 @@ def test_dependency_audit_covers_installed_dev_dependency_closure() -> None:
     assert "playwright" in package_names
     assert "scrapling" in package_names
     assert "linkedin-apply-assistant" not in package_names
+
+
+def test_dependency_audit_uses_isolated_cache_directory(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    quality = _load_quality_module()
+    requirements_file = tmp_path / "audit-requirements.txt"
+    requirements_file.write_text("pytest==9.0.3\n", encoding="utf-8")
+    monkeypatch.setattr(quality, "write_audit_requirements", lambda: requirements_file)
+
+    command, display_command, cleanup_paths = quality.prepare_gate_command(
+        quality.build_gates()[-1]
+    )
+
+    assert "--cache-dir" in command
+    cache_dir = Path(command[command.index("--cache-dir") + 1])
+    assert cache_dir.is_dir()
+    assert str(cache_dir) in display_command
+    assert cleanup_paths == (requirements_file, cache_dir)
+
+    for path in cleanup_paths:
+        quality._cleanup_temp_path(path)
+    assert not requirements_file.exists()
+    assert not cache_dir.exists()

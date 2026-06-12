@@ -43,7 +43,7 @@ Use Python 3.11 or newer. Install Playwright Chromium before visible-browser wor
 
 The package also includes a local npm launcher shape for package dry-run validation. It delegates to the Python CLI and still requires the Python package to be installed or importable.
 
-See [docs/install-and-configuration.md](docs/install-and-configuration.md) for the full source, Python, npm launcher, and Playwright install matrix. This package is still local-first; this README does not claim a live public repository, npm registry release, or PyPI registry release.
+Source checkout is available at <https://github.com/MohammedGhazal09/linkedin-apply-assistant>. See [docs/install-and-configuration.md](docs/install-and-configuration.md) for the full source, Python, npm launcher, and Playwright install matrix. This package is still local-first; npm and PyPI registry releases remain pending until a later approved publish phase.
 
 ## Quick Start
 

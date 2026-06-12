@@ -27,6 +27,11 @@ dev = [
 [project.scripts]
 linkedin-apply-assistant = "linkedin_apply_assistant.cli:main"
 
+[project.urls]
+Homepage = "https://github.com/MohammedGhazal09/linkedin-apply-assistant#readme"
+Repository = "https://github.com/MohammedGhazal09/linkedin-apply-assistant"
+Issues = "https://github.com/MohammedGhazal09/linkedin-apply-assistant/issues"
+
 [tool.setuptools.packages.find]
 where = ["src"]
 

@@ -10,6 +10,9 @@ def _checklist_text() -> str:
     return (PACKAGE_ROOT / "RELEASE_CHECKLIST.md").read_text(encoding="utf-8").lower()
 
 
+PUBLIC_REPO = "https://github.com/mohammedghazal09/linkedin-apply-assistant"
+
+
 def test_release_required_files_exist() -> None:
     for relative_path in (
         "README.md",
@@ -77,32 +80,34 @@ def test_release_checklist_distinguishes_final_packaging_cleanup() -> None:
     assert "normal verification" in checklist
 
 
-def test_release_checklist_documents_phase19_no_publish_workflow() -> None:
+def test_release_checklist_documents_pub07_public_metadata_workflow() -> None:
     checklist = _checklist_text()
 
     for phrase in (
-        "phase 19 no-publish workflow",
-        "release readiness only",
-        "future clean standalone repository",
-        "standalone/linkedin-apply-assistant",
-        "main",
+        "phase 23 pub-07 public metadata readiness",
+        PUBLIC_REPO,
+        "repository.url",
+        "homepage",
+        "bugs.url",
+        "project urls",
+        "real gitleaks evidence",
+        "python scripts\\release.py clean",
+        "python scripts\\release.py verify",
+        "npm pack --dry-run --json",
+        "no-publish proof",
         "v0.1.0",
-        "phases 20 and 21 pass",
-        "explicit ship approval",
+        "phase 24",
         "changelog.md",
-        "19-verification.md",
+        "23-verification.md",
         "manual approval point",
-        "gh repo create",
-        "git remote add",
         "git push",
         "git tag",
         "github release",
         "npm publish",
         "pypi publish",
+        "testpypi publish",
         "delete the generated candidate",
         "do not reuse the failed candidate",
-        "python scripts\\release.py clean",
-        "python scripts\\release.py verify",
     ):
         assert phrase in checklist
 

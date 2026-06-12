@@ -2,17 +2,21 @@
 
 Use this checklist before publishing LinkedIn-apply-assistant.
 
-## Phase 19 No-Publish Workflow
+## Phase 23 PUB-07 Public Metadata Readiness
 
-Phase 19 is release readiness only. It does not create a remote, push code, create tags, create a GitHub Release, publish to npm, or publish to PyPI.
+PUB-07 confirms that package metadata, source-install docs, and release hygiene point to the canonical public repository:
 
-The release target is a future clean standalone repository containing only the public files from `standalone/linkedin-apply-assistant`. The future public repository uses `main` as its default branch.
+```text
+https://github.com/MohammedGhazal09/linkedin-apply-assistant
+```
 
-The future first tag is `v0.1.0` only after Phases 20 and 21 pass and explicit ship approval is given. Phase 20 owns download and install paths for npm and source code. Phase 21 owns terminal usage polish and first-run command help.
+This checklist is release readiness only. It does not create tags, create a GitHub Release, publish to npm, publish to PyPI, publish to TestPyPI, configure registry tokens, or run registry provenance automation.
 
-Release notes come from package `CHANGELOG.md` plus Phase 19 evidence in `.planning/phases/19-prepare-clean-public-release-repository-and-private-data-qua/19-VERIFICATION.md`.
+The future first tag is `v0.1.0` only after Phase 24 and explicit release approval. Phase 22 created and verified the public repository. Phase 23 owns public metadata and release-tooling readiness. Phase 24 owns tag and GitHub Release creation.
 
-Manual approval point: stop before any `gh repo create`, `git remote add`, `git push`, `git tag`, GitHub Release, npm publish, or PyPI publish action. Approval must name the target repository and release channel.
+Release notes come from package `CHANGELOG.md` plus Phase 23 evidence in `.planning/phases/23-finalize-public-metadata-and-release-tooling-pub-07/23-VERIFICATION.md`.
+
+Manual approval point: stop before any `git push`, `git tag`, GitHub Release, npm publish, PyPI publish, TestPyPI publish, registry-token setup, public-visibility change, or other external action not explicitly authorized for the current phase. Approval must name the target repository or release channel.
 
 Rollback path for failed readiness: delete the generated candidate or archive, do not reuse the failed candidate, rerun `python scripts\release.py clean`, then rerun `python scripts\release.py verify`.
 
@@ -23,7 +27,22 @@ git add -- RELEASE_CHECKLIST.md CHANGELOG.md scripts\release.py release-manifest
 git add -- docs\install-and-configuration.md docs\troubleshooting.md README.md
 ```
 
-Do not add `docs/publishing.md` in Phase 19.
+Do not add registry-publish automation in PUB-07.
+
+## Required Public Metadata
+
+`package.json` must include exactly these public project fields:
+
+- `repository.type`: `git`
+- `repository.url`: `git+https://github.com/MohammedGhazal09/linkedin-apply-assistant.git`
+- `homepage`: `https://github.com/MohammedGhazal09/linkedin-apply-assistant#readme`
+- `bugs.url`: `https://github.com/MohammedGhazal09/linkedin-apply-assistant/issues`
+
+`pyproject.toml` must include exactly these project URLs:
+
+- `Homepage`: `https://github.com/MohammedGhazal09/linkedin-apply-assistant#readme`
+- `Repository`: `https://github.com/MohammedGhazal09/linkedin-apply-assistant`
+- `Issues`: `https://github.com/MohammedGhazal09/linkedin-apply-assistant/issues`
 
 ## Hard Publish Blockers
 
@@ -42,11 +61,15 @@ Do not add `docs/publishing.md` in Phase 19.
 | Python build smoke | `python -m build --outdir <temp>` creates local sdist and wheel artifacts outside the package root. | Pending release review |
 | npm pack smoke | `npm pack --dry-run --json` reports the package-local npm launcher shape without sending anything to a registry. | Pending release review |
 | npm launcher guardrails | `python -m pytest tests\test_npm_launcher.py tests\test_distribution_smoke.py -q` confirms the launcher delegates to Python and has no hidden install or registry action. | Pending release review |
+| Public metadata drift | `python -m pytest tests\test_distribution_metadata.py tests\test_npm_launcher.py -q` confirms npm and Python metadata point to the canonical GitHub repository. | Pending release review |
+| Public source docs drift | `python -m pytest tests\test_docs_smoke.py tests\test_release_readiness.py -q` confirms source checkout docs use the canonical GitHub repository and registry/tag/release wording remains pending. | Pending release review |
+| Real gitleaks evidence | `gitleaks version`, `python scripts\release.py verify`, and `python scripts\release.py scan <candidate-or-checkout>` record real gitleaks scans with `gitleaks: passed`. | Pending release review |
 | Terminal help drift | `python -m pytest tests\test_cli_help.py tests\test_config_diagnostics.py -q` confirms root help, subcommand help, and `linkedin-apply-assistant config check` stay actionable. | Pending release review |
 | Config diagnostics drift | `tests\test_config_diagnostics.py` confirms `config check` reports runtime paths without creating workspace files or directories. | Pending release review |
 | Command reference drift | `docs\commands.md` remains linked from README and install docs, and docs smoke checks keep command coverage current. | Pending release review |
 | Browser setup guidance drift | Help and docs keep `python -m playwright install chromium`, browser profile guidance, no-submit language, and browser submission remains disabled. | Pending release review |
 | Explicit no-publish approval | Stop before any remote, tag, GitHub Release, registry token setup, npm registry action, PyPI registry action, or TestPyPI registry action until explicit ship approval names the target channel. | Pending release review |
+| No-publish proof | Confirm no npm package, no PyPI project, no `v0.1.0` tag, and no GitHub Release `v0.1.0` exist unless a later approved phase created them. | Pending release review |
 
 Do not publish while any hard blocker remains unresolved.
 
@@ -61,7 +84,7 @@ Do not publish while any hard blocker remains unresolved.
 - Changelog has `Unreleased` and `0.1.0`.
 - Source, Python, and npm launcher install docs are current and tested.
 - Phase 21 terminal UX docs and help stay current: `docs\commands.md`, `tests\test_cli_help.py`, and `tests\test_config_diagnostics.py`.
-- `package.json` omits `repository`, `homepage`, and `bugs` until the real standalone public repository exists.
+- Public package metadata points to the canonical GitHub repository and issue tracker.
 
 ## Verification Commands
 
@@ -72,9 +95,11 @@ python -m pytest tests\test_cli_help.py tests\test_config_diagnostics.py -q
 python -m pytest tests\test_docs_smoke.py tests\test_npm_launcher.py tests\test_distribution_metadata.py tests\test_distribution_smoke.py tests\test_release_manifest.py tests\test_release_readiness.py -q
 python -m build --outdir $env:TEMP\linkedin-apply-assistant-dist
 npm pack --dry-run --json
+gitleaks version
 python scripts\release.py clean
 python scripts\release.py manifest --check
 python scripts\release.py verify
+python scripts\release.py scan .
 python scripts\quality.py
 python -m pytest tests -q
 ```

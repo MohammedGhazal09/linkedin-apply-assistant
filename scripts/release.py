@@ -217,6 +217,10 @@ def _is_generated_path(path: Path) -> bool:
     return any(part in GENERATED_DIR_NAMES or part.endswith(".egg-info") for part in path.parts)
 
 
+def _is_vcs_path(path: Path) -> bool:
+    return any(part == ".git" for part in path.parts)
+
+
 def _is_descendant_of(path: Path, possible_parent: Path) -> bool:
     return path == possible_parent or possible_parent in path.parents
 
@@ -271,6 +275,8 @@ def find_unlisted_files(
         if not path.is_file():
             continue
         relative = path.relative_to(root)
+        if _is_vcs_path(relative):
+            continue
         if ignore_generated and _is_generated_path(relative):
             continue
         if relative.as_posix() not in allowed:
@@ -346,6 +352,10 @@ def _fallback_scan_findings(root: Path) -> list[ScanFinding]:
     for path in sorted(root_resolved.rglob("*"), key=lambda item: item.as_posix()):
         relative = path.relative_to(root_resolved)
         if any(_is_descendant_of(relative, parent) for parent in blocked_parents):
+            continue
+        if _is_vcs_path(relative):
+            if path.is_dir():
+                blocked_parents.append(relative)
             continue
 
         if _is_generated_path(relative):

@@ -6,7 +6,7 @@ from pathlib import Path
 
 
 PACKAGE_ROOT = Path(__file__).resolve().parents[1]
-REPO_ROOT = PACKAGE_ROOT.parents[1]
+REPO_ROOT = PACKAGE_ROOT.parents[1] if PACKAGE_ROOT.parent.name == "standalone" else PACKAGE_ROOT
 SRC_DIR = PACKAGE_ROOT / "src"
 
 if str(SRC_DIR) not in sys.path:

@@ -3,6 +3,14 @@
   "version": "0.1.0",
   "description": "Thin npm launcher for the Python LinkedIn apply assistant package",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MohammedGhazal09/linkedin-apply-assistant.git"
+  },
+  "homepage": "https://github.com/MohammedGhazal09/linkedin-apply-assistant#readme",
+  "bugs": {
+    "url": "https://github.com/MohammedGhazal09/linkedin-apply-assistant/issues"
+  },
   "type": "module",
   "bin": {
     "linkedin-apply-assistant": "./bin/linkedin-apply-assistant.mjs"

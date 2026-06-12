@@ -17,6 +17,7 @@ LAUNCHER = PACKAGE_ROOT / "bin" / "linkedin-apply-assistant.mjs"
 PYPROJECT = PACKAGE_ROOT / "pyproject.toml"
 INIT_PY = PACKAGE_ROOT / "src" / "linkedin_apply_assistant" / "__init__.py"
 SRC_DIR = PACKAGE_ROOT / "src"
+PUBLIC_REPO = "https://github.com/MohammedGhazal09/linkedin-apply-assistant"
 
 
 def _package_json() -> dict[str, object]:
@@ -48,6 +49,12 @@ def test_package_json_matches_python_identity() -> None:
     }
     assert package["license"] == "MIT"
     assert package["type"] == "module"
+    assert package["repository"] == {
+        "type": "git",
+        "url": f"git+{PUBLIC_REPO}.git",
+    }
+    assert package["homepage"] == f"{PUBLIC_REPO}#readme"
+    assert package["bugs"] == {"url": f"{PUBLIC_REPO}/issues"}
 
 
 def test_package_json_keeps_npm_contents_explicit_and_honest() -> None:
@@ -81,9 +88,6 @@ def test_package_json_keeps_npm_contents_explicit_and_honest() -> None:
         "examples/reports/search-report.example.json",
         "examples/reports/apply-audit.example.json",
     }
-    assert "repository" not in package
-    assert "homepage" not in package
-    assert "bugs" not in package
 
 
 def test_package_json_has_no_install_or_publish_automation() -> None:

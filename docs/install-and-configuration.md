@@ -53,22 +53,26 @@ Bash/macOS/Linux:
 PYTHONPATH="$(pwd)/src" python -m linkedin_apply_assistant.cli --help
 ```
 
-## Future Public Source Download
+## Public Source Download
 
-Phase 20 does not create or assume a live public repository. After a later approved release creates the standalone public repository, clone commands should use that real URL.
+The canonical public source repository is:
 
-Future Git clone shape:
+```text
+https://github.com/MohammedGhazal09/linkedin-apply-assistant
+```
+
+Git clone:
 
 ```bash
-git clone <future-public-repository-url> linkedin-apply-assistant
+git clone https://github.com/MohammedGhazal09/linkedin-apply-assistant.git
 cd linkedin-apply-assistant
 python -m pip install -e ".[dev]"
 linkedin-apply-assistant --help
 ```
 
-Future ZIP/tarball archive shape:
+ZIP/tarball archive shape:
 
-1. Download the approved ZIP/tarball archive from the future public release page.
+1. Download the ZIP/tarball archive from the public repository source archive links.
 2. Extract it.
 3. Open a shell in the extracted package root.
 4. Install and verify:

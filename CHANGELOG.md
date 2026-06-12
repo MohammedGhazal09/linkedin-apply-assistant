@@ -14,6 +14,7 @@ This file follows the spirit of Keep a Changelog and uses semantic version label
 - Source, Python, and npm launcher install path readiness for local validation without registry publication.
 - Distribution metadata, Python build, npm pack, and release-manifest smoke coverage for version `0.1.0`.
 - Terminal help, read-only config diagnostics, command reference docs, and release-readiness coverage for Phase 21 terminal UX.
+- Public GitHub metadata and release-readiness documentation for PUB-07.
 
 ## [0.1.0] - 2026-06-08
 

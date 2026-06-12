@@ -43,6 +43,7 @@ REQUIRED_DOCS = (
 )
 DOC_PATHS = tuple(PACKAGE_ROOT / path for path in REQUIRED_DOCS if path.endswith(".md"))
 INSTALL_SURFACES = (README, INSTALL_DOC)
+PUBLIC_REPO = "https://github.com/MohammedGhazal09/linkedin-apply-assistant"
 
 
 def _read(path: Path) -> str:
@@ -127,8 +128,8 @@ def test_install_docs_cover_source_python_and_playwright_paths() -> None:
     lower_text = text.lower()
 
     for phrase in (
-        "future git clone shape",
-        "git clone <future-public-repository-url>",
+        "public source download",
+        f"git clone {PUBLIC_REPO}.git",
         "zip/tarball",
         "python -m pip install .",
         'python -m pip install -e ".[dev]"',
@@ -227,8 +228,9 @@ def test_install_docs_avoid_live_availability_claims_before_ship_approval() -> N
     for phrase in forbidden_phrases:
         assert phrase not in lower_text
 
-    live_clone_pattern = re.compile(r"git clone https://(?!<)", re.IGNORECASE)
-    assert not live_clone_pattern.search(text)
+    assert "<future-public-repository-url>" not in text
+    assert "future public repository" not in lower_text
+    assert PUBLIC_REPO in text
 
 
 def test_docs_preserve_safety_and_platform_boundaries() -> None:
