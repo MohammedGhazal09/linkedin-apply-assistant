@@ -80,6 +80,52 @@ git -C W:\linkedin-apply-assistant-public push origin :refs/tags/v0.1.0
 git -C W:\linkedin-apply-assistant-public tag -d v0.1.0
 ```
 
+## Phase 26 Community Health Files and Contribution Templates
+
+Phase 26 prepares community-health files and contribution templates for local
+review only. It does not push, tag, create a release, publish to a registry,
+change repository settings, enable Discussions, edit labels, change branch
+protection, or apply a system update.
+
+No push, tag, release, registry, settings, Discussions, labels, branch protection, or system update is allowed in Phase 26.
+
+Required files/templates:
+
+- `SUPPORT.md`
+- `GOVERNANCE.md`
+- `CODE_OF_CONDUCT.md`
+- `.github/ISSUE_TEMPLATE/bug_report.yml`
+- `.github/ISSUE_TEMPLATE/feature_request.yml`
+- `.github/ISSUE_TEMPLATE/docs.yml`
+- `.github/ISSUE_TEMPLATE/safety_compliance.yml`
+- `.github/ISSUE_TEMPLATE/config_help.yml`
+- `.github/ISSUE_TEMPLATE/config.yml`
+- `.github/PULL_REQUEST_TEMPLATE.md`
+
+Required Phase 26 evidence:
+
+```powershell
+python -m pytest tests\test_community_health.py tests\test_docs_smoke.py tests\test_privacy_scans.py tests\test_npm_launcher.py tests\test_distribution_smoke.py tests\test_release_manifest.py tests\test_release_readiness.py -q
+python scripts\release.py manifest --check
+python scripts\release.py verify
+npm pack --dry-run --json
+gh api repos/MohammedGhazal09/linkedin-apply-assistant/community/profile --jq '.health_percentage'
+```
+
+Community-health release gate:
+
+- focused community-health tests pass
+- docs smoke checks cover support, governance, conduct, issue template, and PR
+  template links
+- privacy scan coverage includes root community docs and `.github` templates
+- `release-manifest.json` includes root community docs, issue forms, PR
+  template, and `tests/test_community_health.py`
+- npm dry-run includes the same community docs/templates expected from
+  `package.json` files
+- read-only GitHub community profile baseline is recorded before any push
+- local public-checkout sync only; no live community-profile improvement is
+  claimed until a later approved push publishes the files
+
 ## Required Public Metadata
 
 `package.json` must include exactly these public project fields:
@@ -114,6 +160,7 @@ git -C W:\linkedin-apply-assistant-public tag -d v0.1.0
 | npm launcher guardrails | `python -m pytest tests\test_npm_launcher.py tests\test_distribution_smoke.py -q` confirms the launcher delegates to Python and has no hidden install or registry action. | Pending release review |
 | Public metadata drift | `python -m pytest tests\test_distribution_metadata.py tests\test_npm_launcher.py -q` confirms npm and Python metadata point to the canonical GitHub repository. | Pending release review |
 | Public source docs drift | `python -m pytest tests\test_docs_smoke.py tests\test_release_readiness.py -q` confirms source checkout docs use the canonical GitHub repository and registry/tag/release wording remains pending. | Pending release review |
+| Missing community health files | `python -m pytest tests\test_community_health.py tests\test_docs_smoke.py tests\test_privacy_scans.py -q`, `python scripts\release.py manifest --check`, and `npm pack --dry-run --json` confirm support, governance, conduct, issue forms, PR template, privacy warnings, release manifest, and npm package inclusion. | Pending release review |
 | Real gitleaks evidence | `gitleaks version`, `python scripts\release.py verify`, and `python scripts\release.py scan <candidate-or-checkout>` record real gitleaks scans with `gitleaks: passed`. | Pending release review |
 | Terminal help drift | `python -m pytest tests\test_cli_help.py tests\test_config_diagnostics.py -q` confirms root help, subcommand help, and `linkedin-apply-assistant config check` stay actionable. | Pending release review |
 | Config diagnostics drift | `tests\test_config_diagnostics.py` confirms `config check` reports runtime paths without creating workspace files or directories. | Pending release review |
@@ -136,6 +183,7 @@ Do not publish while any hard blocker remains unresolved.
 - Source, Python, and npm launcher install docs are current and tested.
 - Phase 21 terminal UX docs and help stay current: `docs\commands.md`, `tests\test_cli_help.py`, and `tests\test_config_diagnostics.py`.
 - Public package metadata points to the canonical GitHub repository and issue tracker.
+- Community health files and contribution templates are included in package and release checks.
 
 ## Verification Commands
 
@@ -144,6 +192,7 @@ From the package root:
 ```powershell
 python -m pytest tests\test_cli_help.py tests\test_config_diagnostics.py -q
 python -m pytest tests\test_docs_smoke.py tests\test_npm_launcher.py tests\test_distribution_metadata.py tests\test_distribution_smoke.py tests\test_release_manifest.py tests\test_release_readiness.py -q
+python -m pytest tests\test_community_health.py tests\test_docs_smoke.py tests\test_privacy_scans.py tests\test_npm_launcher.py tests\test_distribution_metadata.py tests\test_distribution_smoke.py tests\test_release_manifest.py tests\test_release_readiness.py -q
 python -m build --outdir $env:TEMP\linkedin-apply-assistant-dist
 npm pack --dry-run --json
 gitleaks version

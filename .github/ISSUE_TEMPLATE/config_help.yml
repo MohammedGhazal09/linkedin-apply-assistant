@@ -1,0 +1,49 @@
+name: Config or setup help
+description: Ask for setup help with sanitized local details.
+title: "[Config]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not attach .env files, real config files, Q&A banks, browser profiles, cookies, screenshots, CVs, private documents, generated local reports, full private URLs, or live job history.
+  - type: textarea
+    id: question
+    attributes:
+      label: Sanitized setup question
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      placeholder: Windows 11, macOS, Ubuntu
+    validations:
+      required: true
+  - type: input
+    id: install_path
+    attributes:
+      label: Install path used
+      placeholder: source checkout, editable install, pipx, npm launcher
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Command run
+      placeholder: linkedin-apply-assistant config check
+    validations:
+      required: true
+  - type: textarea
+    id: redacted_config
+    attributes:
+      label: Redacted config shape or error text
+      description: Paste only sanitized keys, paths, and error text.
+    validations:
+      required: true
+  - type: checkboxes
+    id: private_data
+    attributes:
+      label: Private runtime data removed
+      options:
+        - label: I removed private runtime data, credentials, cookies, browser profiles, screenshots, CVs, private documents, generated local reports, full private URLs, and live job history.
+          required: true

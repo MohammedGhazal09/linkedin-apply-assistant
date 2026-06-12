@@ -16,6 +16,13 @@ Current package metadata version: `0.1.0`.
 
 Read [SAFETY.md](SAFETY.md) before using visible-browser workflows. Read [LEGAL.md](LEGAL.md) for platform responsibility, acceptable-use, and no-legal-advice / no-compliance-certification posture.
 
+## Community and Support
+
+- Support and setup routing: [SUPPORT.md](SUPPORT.md)
+- Contributions: [CONTRIBUTING.md](CONTRIBUTING.md), [.github/ISSUE_TEMPLATE/](.github/ISSUE_TEMPLATE/), and [.github/PULL_REQUEST_TEMPLATE.md](.github/PULL_REQUEST_TEMPLATE.md)
+- Conduct and governance: [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) and [GOVERNANCE.md](GOVERNANCE.md)
+- Vulnerability reporting: [SECURITY.md](SECURITY.md)
+
 ## Install
 
 From the package directory:
@@ -113,6 +120,11 @@ Release and maintainer docs:
 - [MIGRATION.md](MIGRATION.md)
 - [CONTRIBUTING.md](CONTRIBUTING.md)
 - [SECURITY.md](SECURITY.md)
+- [SUPPORT.md](SUPPORT.md)
+- [GOVERNANCE.md](GOVERNANCE.md)
+- [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
+- [.github/ISSUE_TEMPLATE/](.github/ISSUE_TEMPLATE/)
+- [.github/PULL_REQUEST_TEMPLATE.md](.github/PULL_REQUEST_TEMPLATE.md)
 - [CHANGELOG.md](CHANGELOG.md)
 - [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md)
 

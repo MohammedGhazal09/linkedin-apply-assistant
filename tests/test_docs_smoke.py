@@ -25,6 +25,10 @@ REQUIRED_DOCS = (
     "MIGRATION.md",
     "CONTRIBUTING.md",
     "SECURITY.md",
+    "SUPPORT.md",
+    "GOVERNANCE.md",
+    "CODE_OF_CONDUCT.md",
+    ".github/PULL_REQUEST_TEMPLATE.md",
     "CHANGELOG.md",
     "RELEASE_CHECKLIST.md",
     "docs/install-and-configuration.md",
@@ -185,6 +189,23 @@ def test_command_reference_is_linked_from_public_entry_points() -> None:
     assert "docs/commands.md" in readme
     assert "commands.md" in install_doc
     assert "commands.md" in troubleshooting
+
+
+def test_readme_and_contributing_link_community_health_files() -> None:
+    readme = _read(README)
+    contributing = _read(PACKAGE_ROOT / "CONTRIBUTING.md")
+    combined = f"{readme}\n{contributing}"
+
+    for relative_path in (
+        "SUPPORT.md",
+        "GOVERNANCE.md",
+        "CODE_OF_CONDUCT.md",
+        "CONTRIBUTING.md",
+        "SECURITY.md",
+        ".github/ISSUE_TEMPLATE/",
+        ".github/PULL_REQUEST_TEMPLATE.md",
+    ):
+        assert relative_path in combined
 
 
 def test_command_reference_keeps_browser_free_commands_browser_free() -> None:

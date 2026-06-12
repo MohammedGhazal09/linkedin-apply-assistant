@@ -1,0 +1,40 @@
+name: Documentation issue
+description: Report confusing, missing, or stale documentation.
+title: "[Docs]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not attach private screenshots, generated local reports, CVs, private documents, full private URLs, credentials, cookies, browser profiles, or live job history.
+  - type: input
+    id: page
+    attributes:
+      label: Affected page or link
+      placeholder: README.md, docs/install-and-configuration.md, docs/troubleshooting.md
+    validations:
+      required: true
+  - type: textarea
+    id: stale_text
+    attributes:
+      label: Confusing, missing, or stale text
+    validations:
+      required: true
+  - type: textarea
+    id: correction
+    attributes:
+      label: Suggested correction
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected documentation area
+      options:
+        - Install
+        - Safety
+        - Legal
+        - Troubleshooting
+        - Command reference
+        - Other
+    validations:
+      required: true

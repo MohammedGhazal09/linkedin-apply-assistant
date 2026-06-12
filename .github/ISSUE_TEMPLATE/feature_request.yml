@@ -1,0 +1,45 @@
+name: Feature request
+description: Propose a package improvement with safety and privacy context.
+title: "[Feature]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Feature requests must preserve the no-submit boundary.
+
+        Do not request unattended or background submission, hidden submission, CAPTCHA or MFA bypass, fake answers, platform throttling bypass, or mass applications.
+
+        Do not post credentials, cookies, browser profiles, screenshots, CVs, private documents, generated local reports, full private URLs, or live job history.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What user problem would this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposed_behavior
+    attributes:
+      label: Proposed behavior
+    validations:
+      required: true
+  - type: input
+    id: workflow
+    attributes:
+      label: Affected workflow
+      placeholder: config, search, assist, apply, dry-run, report, docs
+    validations:
+      required: true
+  - type: textarea
+    id: safety_privacy
+    attributes:
+      label: Safety/privacy impact
+      description: Explain how the change preserves no-submit behavior and avoids private runtime data.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+    validations:
+      required: true

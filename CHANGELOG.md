@@ -6,7 +6,10 @@ This file follows the spirit of Keep a Changelog and uses semantic version label
 
 ## [Unreleased]
 
-No unreleased package changes yet.
+### Added
+
+- Community health files and contribution templates for the standalone public
+  repository package surface.
 
 ## [0.1.0] - 2026-06-12
 

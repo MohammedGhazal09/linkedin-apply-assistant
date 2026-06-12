@@ -14,10 +14,14 @@ SCAN_TARGETS = (
     PACKAGE_ROOT / "MIGRATION.md",
     PACKAGE_ROOT / "CONTRIBUTING.md",
     PACKAGE_ROOT / "SECURITY.md",
+    PACKAGE_ROOT / "SUPPORT.md",
+    PACKAGE_ROOT / "GOVERNANCE.md",
+    PACKAGE_ROOT / "CODE_OF_CONDUCT.md",
     PACKAGE_ROOT / "CHANGELOG.md",
     PACKAGE_ROOT / "RELEASE_CHECKLIST.md",
     PACKAGE_ROOT / "release-manifest.json",
     PACKAGE_ROOT / "pyproject.toml",
+    PACKAGE_ROOT / ".github",
     PACKAGE_ROOT / ".gitignore",
     PACKAGE_ROOT / "docs",
     PACKAGE_ROOT / "configs",
@@ -200,6 +204,16 @@ def test_scan_scope_covers_public_package_files() -> None:
     assert Path("MIGRATION.md") in scanned
     assert Path("CONTRIBUTING.md") in scanned
     assert Path("SECURITY.md") in scanned
+    assert Path("SUPPORT.md") in scanned
+    assert Path("GOVERNANCE.md") in scanned
+    assert Path("CODE_OF_CONDUCT.md") in scanned
+    assert Path(".github/ISSUE_TEMPLATE/bug_report.yml") in scanned
+    assert Path(".github/ISSUE_TEMPLATE/feature_request.yml") in scanned
+    assert Path(".github/ISSUE_TEMPLATE/docs.yml") in scanned
+    assert Path(".github/ISSUE_TEMPLATE/safety_compliance.yml") in scanned
+    assert Path(".github/ISSUE_TEMPLATE/config_help.yml") in scanned
+    assert Path(".github/ISSUE_TEMPLATE/config.yml") in scanned
+    assert Path(".github/PULL_REQUEST_TEMPLATE.md") in scanned
     assert Path("CHANGELOG.md") in scanned
     assert Path("RELEASE_CHECKLIST.md") in scanned
     assert Path("release-manifest.json") in scanned

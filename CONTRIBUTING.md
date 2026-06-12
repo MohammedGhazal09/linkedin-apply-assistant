@@ -18,11 +18,23 @@ node test-all.mjs --quick
 ## Contribution Rules
 
 - Keep examples synthetic.
-- Do not commit credentials, cookies, browser state, screenshots, private documents, full private URLs, generated local reports, or live job history.
+- Do not commit credentials, cookies, browser profiles, screenshots, CVs, private documents, generated local reports, full private URLs, or live job history.
 - Preserve the no-submit default.
 - Do not add broad approvals, background sending, hidden submission, or unattended apply behavior.
 - Do not make claims that the package is legal advice, platform compliant, audit certified, or guaranteed to succeed.
 - Keep public docs English-only until localization is explicitly planned.
+
+## Community and Reporting
+
+- Support and setup help start in [SUPPORT.md](SUPPORT.md).
+- Governance decisions follow [GOVERNANCE.md](GOVERNANCE.md).
+- Conduct expectations and private conduct reporting are in [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
+- Vulnerability reporting stays in [SECURITY.md](SECURITY.md); do not post exploit details publicly.
+- Public reports should use [.github/ISSUE_TEMPLATE/](.github/ISSUE_TEMPLATE/).
+- Pull requests should follow [.github/PULL_REQUEST_TEMPLATE.md](.github/PULL_REQUEST_TEMPLATE.md).
+
+Issue and pull request templates are the expected public contribution path. Keep
+private runtime data out of issues and pull requests.
 
 ## Tests and Quality
 

@@ -29,6 +29,16 @@ def test_release_required_files_exist() -> None:
         "MIGRATION.md",
         "CONTRIBUTING.md",
         "SECURITY.md",
+        "SUPPORT.md",
+        "GOVERNANCE.md",
+        "CODE_OF_CONDUCT.md",
+        ".github/ISSUE_TEMPLATE/bug_report.yml",
+        ".github/ISSUE_TEMPLATE/feature_request.yml",
+        ".github/ISSUE_TEMPLATE/docs.yml",
+        ".github/ISSUE_TEMPLATE/safety_compliance.yml",
+        ".github/ISSUE_TEMPLATE/config_help.yml",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        ".github/PULL_REQUEST_TEMPLATE.md",
         "CHANGELOG.md",
         "RELEASE_CHECKLIST.md",
     ):
@@ -196,6 +206,33 @@ def test_release_checklist_documents_phase24_pub08_github_source_release() -> No
         "no pypi publish",
         "no testpypi publish",
         "no registry token setup",
+    ):
+        assert phrase in checklist
+
+
+def test_release_checklist_documents_phase26_community_health_gates() -> None:
+    checklist = _checklist_text()
+
+    for phrase in (
+        "phase 26 community health files and contribution templates",
+        "support.md",
+        "governance.md",
+        "code_of_conduct.md",
+        ".github/issue_template/bug_report.yml",
+        ".github/issue_template/feature_request.yml",
+        ".github/issue_template/docs.yml",
+        ".github/issue_template/safety_compliance.yml",
+        ".github/issue_template/config_help.yml",
+        ".github/issue_template/config.yml",
+        ".github/pull_request_template.md",
+        "python -m pytest tests\\test_community_health.py",
+        "python scripts\\release.py manifest --check",
+        "python scripts\\release.py verify",
+        "npm pack --dry-run --json",
+        "read-only github community profile baseline",
+        "local public-checkout sync only",
+        "no live community-profile improvement",
+        "no push, tag, release, registry, settings, discussions, labels, branch protection, or system update",
     ):
         assert phrase in checklist
 

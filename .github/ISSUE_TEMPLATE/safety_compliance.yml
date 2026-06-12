@@ -1,0 +1,48 @@
+name: Safety or compliance concern
+description: Report a public safety concern without exploit details.
+title: "[Safety]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form only for public safety or compliance concerns that can be described without exploit details.
+
+        If the concern involves a vulnerability or exploit details, stop here and follow SECURITY.md private reporting guidance instead.
+
+        Do not post exploit details, credentials, cookies, browser profiles, screenshots, CVs, private documents, generated local reports, full private URLs, or live job history.
+  - type: textarea
+    id: concern
+    attributes:
+      label: Public safety/compliance concern summary
+    validations:
+      required: true
+  - type: input
+    id: workflow
+    attributes:
+      label: Affected workflow or docs
+      placeholder: search, assist, apply, SAFETY.md, LEGAL.md
+    validations:
+      required: true
+  - type: textarea
+    id: safer_behavior
+    attributes:
+      label: Expected safer behavior
+    validations:
+      required: true
+  - type: dropdown
+    id: vulnerability
+    attributes:
+      label: Could this involve a vulnerability?
+      options:
+        - "No"
+        - "Unsure"
+        - "Yes - I will use SECURITY.md private reporting instead"
+    validations:
+      required: true
+  - type: checkboxes
+    id: disclosure
+    attributes:
+      label: Public disclosure check
+      options:
+        - label: I did not post exploit details or private data publicly.
+          required: true

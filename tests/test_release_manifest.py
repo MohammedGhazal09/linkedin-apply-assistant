@@ -78,6 +78,27 @@ def test_manifest_includes_phase21_terminal_ux_files_with_narrow_categories() ->
         assert categories[path] == "tests"
 
 
+def test_manifest_includes_phase26_community_health_files() -> None:
+    manifest = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
+    categories = {item["path"]: item["category"] for item in manifest["files"]}
+
+    for path in ("SUPPORT.md", "GOVERNANCE.md", "CODE_OF_CONDUCT.md"):
+        assert categories[path] == "docs"
+
+    for path in (
+        ".github/ISSUE_TEMPLATE/bug_report.yml",
+        ".github/ISSUE_TEMPLATE/feature_request.yml",
+        ".github/ISSUE_TEMPLATE/docs.yml",
+        ".github/ISSUE_TEMPLATE/safety_compliance.yml",
+        ".github/ISSUE_TEMPLATE/config_help.yml",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        ".github/PULL_REQUEST_TEMPLATE.md",
+    ):
+        assert categories[path] == "community-template"
+
+    assert categories["tests/test_community_health.py"] == "tests"
+
+
 def test_manifest_excludes_private_root_and_runtime_paths() -> None:
     manifest = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
     paths = {item["path"] for item in manifest["files"]}

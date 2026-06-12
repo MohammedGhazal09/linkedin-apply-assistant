@@ -8,6 +8,13 @@ If private reporting is not configured yet, open a maintainer-private channel be
 
 Do not use upstream personal contacts as the default standalone package security contact.
 
+## Reporting Routes
+
+- Usage and setup support belongs in [SUPPORT.md](SUPPORT.md).
+- Public safety/compliance concerns can use [.github/ISSUE_TEMPLATE/safety_compliance.yml](.github/ISSUE_TEMPLATE/safety_compliance.yml) only without exploit details.
+- Conduct reports belong in [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) and should use private reporting.
+- Vulnerability details stay in this security policy and should not be posted publicly.
+
 ## What to Report
 
 Report issues such as:
