@@ -1,0 +1,35 @@
+qa_pairs:
+  - id: work_authorization
+    question_patterns:
+      - "Are you authorized to work in the target country?"
+      - "Do you require sponsorship?"
+    answer: "Use a truthful work-authorization answer for your situation."
+    response_type: text
+
+  - id: notice_period
+    question_patterns:
+      - "When can you start?"
+      - "What is your notice period?"
+    answer: "Use your current availability or notice period."
+    response_type: text
+
+  - id: work_arrangement
+    question_patterns:
+      - "Do you prefer remote, hybrid, or onsite work?"
+      - "What work arrangement are you looking for?"
+    answer: "Remote or hybrid roles are preferred, depending on team needs."
+    response_type: text
+
+  - id: compensation_expectation
+    question_patterns:
+      - "What are your salary expectations?"
+      - "What compensation range are you targeting?"
+    answer: "Use a realistic range for the role, location, and market."
+    response_type: text
+
+  - id: portfolio
+    question_patterns:
+      - "Please share a portfolio or project link."
+      - "Do you have examples of your work?"
+    answer: "https://example.com/portfolio"
+    response_type: url

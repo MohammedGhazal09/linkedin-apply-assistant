@@ -1,0 +1,25 @@
+{
+  "jobs": [
+    {
+      "title": "Backend Platform Engineer",
+      "company": "Example Systems",
+      "url": "https://example.com/jobs/backend-platform-engineer",
+      "location": "Remote",
+      "description": "Build and maintain service APIs, data workflows, and reliability tooling for a small product team."
+    },
+    {
+      "title": "Frontend Application Engineer",
+      "company": "Sample Interface Labs",
+      "url": "https://example.com/jobs/frontend-application-engineer",
+      "location": "Example City",
+      "description": "Develop accessible application screens, reusable components, and browser-based workflow improvements."
+    },
+    {
+      "title": "Automation QA Engineer",
+      "company": "Demo Quality Works",
+      "url": "https://example.com/jobs/automation-qa-engineer",
+      "location": "Hybrid",
+      "description": "Create deterministic test fixtures, validate user-facing flows, and improve local developer feedback loops."
+    }
+  ]
+}

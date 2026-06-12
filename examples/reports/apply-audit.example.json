@@ -1,0 +1,31 @@
+{
+  "schema_version": "example-1",
+  "command": "apply",
+  "generated_at": "2026-06-08T00:00:00Z",
+  "status": "prepared",
+  "summary": {
+    "jobs_loaded": 1,
+    "jobs_prepared": 1,
+    "applications_submitted": 0,
+    "unknown_required_questions": 1
+  },
+  "jobs": [
+    {
+      "company": "Example Robotics",
+      "role": "Applied AI Engineer",
+      "decision": "needs-review",
+      "submit_state": "disabled",
+      "blockers": [
+        "One required question needs a truthful user answer before completion."
+      ]
+    }
+  ],
+  "privacy": {
+    "synthetic": true,
+    "contains_browser_state": false,
+    "contains_private_documents": false,
+    "contains_full_private_urls": false,
+    "contains_screenshots": false
+  }
+}
+

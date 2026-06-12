@@ -1,0 +1,24 @@
+profile:
+  name: "Example Candidate"
+  headline: "Software engineer"
+  location: "Example City"
+  contact:
+    email: "candidate@example.com"
+    phone: null
+    website: "https://example.com/portfolio"
+
+defaults:
+  limit: 10
+  visible_browser: true
+  require_confirmation: true
+  dry_run: true
+
+documents:
+  resume: "documents/resume.example.pdf"
+  cover_letter: "documents/cover-letter.example.pdf"
+  portfolio: "https://example.com/portfolio"
+
+paths:
+  qa_bank: "configs/qa_bank.example.yml"
+  browser_profile: null
+  output_dir: "local-output"

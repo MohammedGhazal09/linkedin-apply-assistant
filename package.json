@@ -1,0 +1,36 @@
+{
+  "name": "linkedin-apply-assistant",
+  "version": "0.1.0",
+  "description": "Thin npm launcher for the Python LinkedIn apply assistant package",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "linkedin-apply-assistant": "./bin/linkedin-apply-assistant.mjs"
+  },
+  "files": [
+    "bin/linkedin-apply-assistant.mjs",
+    "README.md",
+    "SAFETY.md",
+    "LEGAL.md",
+    "LICENSE",
+    "THIRD_PARTY_NOTICES.md",
+    "CHANGELOG.md",
+    "MIGRATION.md",
+    "CONTRIBUTING.md",
+    "SECURITY.md",
+    "RELEASE_CHECKLIST.md",
+    "docs/install-and-configuration.md",
+    "docs/commands.md",
+    "docs/browser-session.md",
+    "docs/search.md",
+    "docs/assist.md",
+    "docs/apply.md",
+    "docs/reports.md",
+    "docs/troubleshooting.md",
+    "configs/config.example.yml",
+    "configs/qa_bank.example.yml",
+    "examples/dry_run_input.example.json",
+    "examples/reports/search-report.example.json",
+    "examples/reports/apply-audit.example.json"
+  ]
+}

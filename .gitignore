@@ -1,0 +1,25 @@
+# Local runtime and private data
+.env
+.env.*
+!.env.example
+configs/config.yml
+configs/qa_bank.yml
+data/
+.cache/
+output/
+/reports/
+!examples/reports/
+browser-profile/
+.scrapling_browser_profile/
+linkedin_user_data*/
+documents/
+*.local.*
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+build/
+dist/
+*.egg-info/
