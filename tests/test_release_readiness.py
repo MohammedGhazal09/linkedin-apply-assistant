@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import re
 
 
 PACKAGE_ROOT = Path(__file__).resolve().parents[1]
@@ -8,6 +9,11 @@ PACKAGE_ROOT = Path(__file__).resolve().parents[1]
 
 def _checklist_text() -> str:
     return (PACKAGE_ROOT / "RELEASE_CHECKLIST.md").read_text(encoding="utf-8").lower()
+
+
+def _checklist_command_blocks() -> str:
+    checklist = (PACKAGE_ROOT / "RELEASE_CHECKLIST.md").read_text(encoding="utf-8").lower()
+    return "\n".join(re.findall(r"```(?:powershell|text)?\n(.*?)```", checklist, flags=re.DOTALL))
 
 
 PUBLIC_REPO = "https://github.com/mohammedghazal09/linkedin-apply-assistant"
@@ -166,3 +172,43 @@ def test_release_checklist_documents_phase21_terminal_ux_gates() -> None:
         "python scripts\\release.py verify",
     ):
         assert phrase in checklist
+
+
+def test_release_checklist_documents_phase24_pub08_github_source_release() -> None:
+    checklist = _checklist_text()
+
+    for phrase in (
+        "phase 24 pub-08 v0.1.0 github source release",
+        "mohammedghazal09/linkedin-apply-assistant",
+        "tag: `v0.1.0`",
+        "draft-first github release",
+        "release-prep `main` commit",
+        "push origin main",
+        "origin/main",
+        "--verify-tag",
+        "refs/tags/v0.1.0",
+        "then pushing only `refs/tags/v0.1.0`",
+        "empty release assets",
+        "gitleaks: passed",
+        "no-registry proof",
+        "rollback commands",
+        "no npm publish",
+        "no pypi publish",
+        "no testpypi publish",
+        "no registry token setup",
+    ):
+        assert phrase in checklist
+
+
+def test_release_checklist_does_not_script_broad_tag_or_registry_publish() -> None:
+    commands = _checklist_command_blocks()
+
+    for forbidden in (
+        "git push --tags",
+        "git push origin --tags",
+        "git push --mirror",
+        "gh release verify",
+        "npm publish",
+        "twine upload",
+    ):
+        assert forbidden not in commands

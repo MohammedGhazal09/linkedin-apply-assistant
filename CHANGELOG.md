@@ -6,8 +6,13 @@ This file follows the spirit of Keep a Changelog and uses semantic version label
 
 ## [Unreleased]
 
+No unreleased package changes yet.
+
+## [0.1.0] - 2026-06-12
+
 ### Added
 
+- Initial GitHub source release for the standalone `linkedin-apply-assistant` package.
 - Fresh-reader package README and user-journey docs.
 - Package-local legal, security, contribution, migration, release checklist, license, and third-party notice docs.
 - Synthetic report examples and release-readiness verification coverage.
@@ -15,13 +20,11 @@ This file follows the spirit of Keep a Changelog and uses semantic version label
 - Distribution metadata, Python build, npm pack, and release-manifest smoke coverage for version `0.1.0`.
 - Terminal help, read-only config diagnostics, command reference docs, and release-readiness coverage for Phase 21 terminal UX.
 - Public GitHub metadata and release-readiness documentation for PUB-07.
-
-## [0.1.0] - 2026-06-08
-
-### Added
-
 - Initial standalone package boundary for local LinkedIn job workflows.
 - Console command `linkedin-apply-assistant` with `search`, `assist`, `apply`, `dry-run`, and `report`.
 - Sanitized config, Q&A bank, and dry-run input examples.
 - Package-local quality gate with pytest, Ruff, compile checks, and dependency audit.
 - No-submit safety posture and visible-browser workflow boundaries.
+- User-controlled source install and download path through the canonical GitHub repository.
+- Release hygiene covering manifest verification, local build/pack smoke tests, and gitleaks evidence.
+- GitHub source release scope only; no npm, PyPI, or TestPyPI registry package is part of this release.

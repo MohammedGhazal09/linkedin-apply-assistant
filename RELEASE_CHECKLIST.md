@@ -29,6 +29,57 @@ git add -- docs\install-and-configuration.md docs\troubleshooting.md README.md
 
 Do not add registry-publish automation in PUB-07.
 
+## Phase 24 PUB-08 v0.1.0 GitHub Source Release
+
+PUB-08 publishes the first GitHub source release only:
+
+- Repository: `MohammedGhazal09/linkedin-apply-assistant`
+- Tag: `v0.1.0`
+- Release type: draft-first GitHub Release, then final/latest only after verification passes.
+- Package scope: source checkout, generated GitHub source archives, and local build/pack smoke evidence.
+- Safety boundary: browser workflows remain user-controlled and no-submit; the package prepares and assists, but does not click final application submission for the user.
+
+Explicit ship approval is required before any of these actions:
+
+- pushing the verified release-prep `main` commit to `origin/main`
+- annotated tag creation for `v0.1.0`
+- then pushing only `refs/tags/v0.1.0` for the tag step
+- draft GitHub Release creation with `--verify-tag`
+- final publication after draft/source verification
+
+Required Phase 24 evidence:
+
+- Release-prep main sync: `git -C W:\linkedin-apply-assistant-public status --short --branch`, `git -C W:\linkedin-apply-assistant-public rev-parse HEAD`, `git -C W:\linkedin-apply-assistant-public push origin main`, and `git -C W:\linkedin-apply-assistant-public ls-remote --heads origin main` confirm `origin/main` matches the verified release-prep commit before tag creation.
+- Focused release/docs tests: `python -m pytest tests\test_distribution_metadata.py tests\test_release_readiness.py`
+- Full package quality gate: `python scripts\quality.py`
+- Clean release workspace: `python scripts\release.py clean`
+- Manifest verification: `python scripts\release.py manifest --check`
+- Release scan: `python scripts\release.py verify`
+- Python build smoke outside the package root: `python -m build --outdir <temp>`
+- npm launcher smoke without registry upload: `npm pack --dry-run --json`
+- Real gitleaks evidence: `gitleaks version`, package directory scan, public checkout directory scan, and public checkout history scan all pass with `gitleaks: passed`
+- Draft release check: `gh release view v0.1.0 --repo MohammedGhazal09/linkedin-apply-assistant --json tagName,name,url,isDraft,isPrerelease,targetCommitish,zipballUrl,tarballUrl,assets`
+- Release list check: `gh release list --repo MohammedGhazal09/linkedin-apply-assistant --json tagName,name,isDraft,isLatest,isPrerelease,publishedAt --limit 20`
+- No-registry proof: npm and PyPI read-only absence checks remain package-not-found or 404 before and after the GitHub source release.
+
+No-registry and no-asset boundary:
+
+- no npm publish
+- no PyPI publish
+- no TestPyPI publish
+- no registry token setup
+- empty release assets on GitHub; do not attach wheel, sdist, or npm tarball artifacts
+- no provenance, attestations, branch protection, topics, Release Please, or repository-hardening work in this phase
+- no broad branch, mirror, or all-tags push; the only branch update in PUB-08 is the explicitly approved release-prep `main` push before tag creation
+
+Rollback commands for failed draft/tag work:
+
+```powershell
+gh release delete v0.1.0 --repo MohammedGhazal09/linkedin-apply-assistant --yes --cleanup-tag
+git -C W:\linkedin-apply-assistant-public push origin :refs/tags/v0.1.0
+git -C W:\linkedin-apply-assistant-public tag -d v0.1.0
+```
+
 ## Required Public Metadata
 
 `package.json` must include exactly these public project fields:

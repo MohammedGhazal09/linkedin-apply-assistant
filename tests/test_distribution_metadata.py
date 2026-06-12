@@ -44,6 +44,7 @@ def test_python_and_npm_package_identity_stays_synchronized() -> None:
 
     assert pyproject_project["name"] == "linkedin-apply-assistant"
     assert pyproject_project["version"] == "0.1.0"
+    assert package["version"] == "0.1.0"
     assert package["name"] == pyproject_project["name"]
     assert package["version"] == pyproject_project["version"]
     assert _init_constant("__version__") == pyproject_project["version"]
@@ -102,6 +103,21 @@ def test_public_source_and_pending_registry_wording_is_labeled() -> None:
     assert "does not claim a live public repository" not in readme
     assert "after a later approved npm registry release" in install_doc
     assert "until that release exists" in install_doc
+
+
+def test_changelog_tracks_v010_release_without_registry_publication_claims() -> None:
+    changelog = CHANGELOG.read_text(encoding="utf-8")
+    changelog_lower = changelog.lower()
+
+    assert "## [Unreleased]" in changelog
+    assert "## [0.1.0] - 2026-06-12" in changelog
+
+    for forbidden in (
+        "published to npm",
+        "published to pypi",
+        "published to testpypi",
+    ):
+        assert forbidden not in changelog_lower
 
 
 def test_package_metadata_points_to_public_repository() -> None:
