@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 const cliModule = "linkedin_apply_assistant.cli";
 const userArgs = process.argv.slice(2);
 const scriptDir = dirname(fileURLToPath(import.meta.url));
+const packageRoot = resolve(scriptDir, "..");
 const localSrc = resolve(scriptDir, "..", "src");
 const launcherEnv = { ...process.env };
 const candidates =
@@ -32,10 +33,9 @@ function printSetupGuidance(reason) {
   console.error(`linkedin-apply-assistant npm launcher could not start: ${reason}`);
   console.error("");
   console.error("This npm package is only a thin launcher for the Python package.");
-  console.error("Install the Python package from the package root, then retry:");
-  console.error("  python -m pip install .");
-  console.error('  python -m pip install -e ".[dev]"');
-  console.error("  pipx install <future-source>");
+  console.error("Install the bundled Python package from this npm package root, then retry:");
+  console.error(`  python -m pip install "${packageRoot}"`);
+  console.error(`  py -3 -m pip install "${packageRoot}"`);
   console.error("");
   console.error("Module fallback after source checkout:");
   console.error("  python -m linkedin_apply_assistant.cli --help");

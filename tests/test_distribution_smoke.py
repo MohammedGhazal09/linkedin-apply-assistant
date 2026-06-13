@@ -67,6 +67,8 @@ def test_npm_pack_dry_run_reports_expected_public_files() -> None:
     expected = {
         "package.json",
         "bin/linkedin-apply-assistant.mjs",
+        "pyproject.toml",
+        "install.ps1",
         "README.md",
         "SAFETY.md",
         "LEGAL.md",
@@ -87,6 +89,8 @@ def test_npm_pack_dry_run_reports_expected_public_files() -> None:
         ".github/ISSUE_TEMPLATE/config.yml",
         ".github/PULL_REQUEST_TEMPLATE.md",
         "RELEASE_CHECKLIST.md",
+        "docs/commands.md",
+        "docs/ci-and-release-policy.md",
         "docs/install-and-configuration.md",
         "docs/registry-publication-strategy.md",
         "docs/browser-session.md",
@@ -100,6 +104,9 @@ def test_npm_pack_dry_run_reports_expected_public_files() -> None:
         "examples/dry_run_input.example.json",
         "examples/reports/search-report.example.json",
         "examples/reports/apply-audit.example.json",
+        "src/linkedin_apply_assistant/__init__.py",
+        "src/linkedin_apply_assistant/cli.py",
+        "src/linkedin_apply_assistant/workflows.py",
     }
     assert expected.issubset(files)
 

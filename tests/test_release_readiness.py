@@ -72,7 +72,8 @@ def test_release_checklist_tracks_hard_blockers() -> None:
         "config diagnostics drift",
         "command reference drift",
         "browser setup guidance drift",
-        "explicit no-publish approval",
+        "explicit external-action approval",
+        "registry state proof",
     ):
         assert phrase in checklist
 
@@ -156,7 +157,7 @@ def test_release_checklist_documents_phase20_distribution_gates() -> None:
         "repository",
         "homepage",
         "bugs",
-        "source, python, and npm launcher install docs are current and tested",
+        "source, python, npm launcher, and powershell installer docs are current and tested",
         "without sending anything to a registry",
     ):
         assert phrase in checklist
@@ -283,9 +284,9 @@ def test_release_checklist_documents_phase29_registry_strategy_gates() -> None:
         "docs/registry-publication-strategy.md",
         "github releases are the current source-only public channel",
         "`v0.1.0` remains github-source-only",
-        "pypi is the primary future package registry",
+        "pypi is the primary future python registry",
         "testpypi is required for the first registry release",
-        "npm is a secondary future thin-launcher channel",
+        "npm is a public thin-launcher channel",
         "github packages remains deferred",
         "python -m pytest tests\\test_registry_publication_strategy.py",
         "python scripts\\release.py manifest --check",
@@ -313,6 +314,32 @@ def test_release_checklist_documents_phase29_registry_strategy_gates() -> None:
         "future `release.yml` identity only after explicit approval",
         "no `packages: write`, `id-token: write`, or `attestations: write` in phase 29",
         "no executable registry rollback script",
+    ):
+        assert phrase in checklist
+
+
+def test_release_checklist_documents_v011_npm_and_powershell_release() -> None:
+    checklist = _checklist_text()
+
+    for phrase in (
+        "v0.1.1 npm and powershell distribution release",
+        "downloadable through npm and a no-admin powershell installer",
+        "package version: `0.1.1`",
+        "npm package: `linkedin-apply-assistant`",
+        "npm dist-tag: `latest`",
+        "powershell installer: `install.ps1`",
+        "pypi and testpypi remain future channels",
+        "tests\\test_distribution_metadata.py tests\\test_docs_smoke.py tests\\test_npm_launcher.py",
+        "npm pack --dry-run --json",
+        "psparser",
+        "npm view linkedin-apply-assistant version --json",
+        "npm view linkedin-apply-assistant dist-tags --json",
+        "linkedin-apply-assistant@0.1.1",
+        "the launcher has no hidden install or registry publish code",
+        "`install.ps1` downloads from the public github source archive",
+        "does not use `invoke-expression`",
+        "pyPI and testpypi uploads stay out of this release".lower(),
+        "`v0.1.0` remains source-only",
     ):
         assert phrase in checklist
 

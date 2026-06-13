@@ -44,8 +44,8 @@ def test_python_and_npm_package_identity_stays_synchronized() -> None:
     package = _package_json()
 
     assert pyproject_project["name"] == "linkedin-apply-assistant"
-    assert pyproject_project["version"] == "0.1.0"
-    assert package["version"] == "0.1.0"
+    assert pyproject_project["version"] == "0.1.1"
+    assert package["version"] == "0.1.1"
     assert package["name"] == pyproject_project["name"]
     assert package["version"] == pyproject_project["version"]
     assert _init_constant("__version__") == pyproject_project["version"]
@@ -61,7 +61,7 @@ def test_command_and_launcher_metadata_stays_synchronized() -> None:
     assert pyproject_project["scripts"] == {
         "linkedin-apply-assistant": "linkedin_apply_assistant.cli:main"
     }
-    assert package["bin"] == {"linkedin-apply-assistant": "./bin/linkedin-apply-assistant.mjs"}
+    assert package["bin"] == {"linkedin-apply-assistant": "bin/linkedin-apply-assistant.mjs"}
     assert (PACKAGE_ROOT / "bin" / "linkedin-apply-assistant.mjs").is_file()
 
 
@@ -83,7 +83,7 @@ def test_distribution_docs_and_release_surfaces_include_identity() -> None:
 
     for path, text in docs.items():
         assert "linkedin-apply-assistant" in text, path
-        assert "0.1.0" in text, path
+        assert "0.1.1" in text, path
 
     assert "linkedin_apply_assistant" in docs["README.md"]
     assert "linkedin_apply_assistant" in docs["docs/install-and-configuration.md"]
@@ -103,8 +103,10 @@ def test_public_source_and_pending_registry_wording_is_labeled() -> None:
     assert f"git clone {PUBLIC_REPO.lower()}.git" in install_doc
     assert "<future-public-repository-url>" not in install_doc
     assert "does not claim a live public repository" not in readme
-    assert "after a later approved npm registry release" in install_doc
-    assert "until that release exists" in install_doc
+    assert "npm install -g linkedin-apply-assistant" in install_doc
+    assert "powershell installer" in install_doc
+    assert "install.ps1" in install_doc
+    assert "pypi remains a future package channel" in install_doc
     assert "registry-publication-strategy.md" in README.read_text(encoding="utf-8")
     assert "registry-publication-strategy.md" in INSTALL_DOC.read_text(encoding="utf-8")
 
@@ -114,6 +116,7 @@ def test_changelog_tracks_v010_release_without_registry_publication_claims() -> 
     changelog_lower = changelog.lower()
 
     assert "## [Unreleased]" in changelog
+    assert "## [0.1.1] - 2026-06-13" in changelog
     assert "## [0.1.0] - 2026-06-12" in changelog
 
     for forbidden in (
@@ -129,10 +132,10 @@ def test_changelog_tracks_v010_release_without_registry_publication_claims() -> 
 def test_registry_strategy_keeps_current_version_source_only() -> None:
     text = REGISTRY_STRATEGY_DOC.read_text(encoding="utf-8").lower()
 
-    assert "current package metadata version: `0.1.0`" in text
+    assert "current package metadata version: `0.1.1`" in text
     assert "`v0.1.0` stays a github source-only release" in text
     assert "no registry should backfill `0.1.0`" in text
-    assert "`0.1.1`" in text
+    assert "npm launcher release uses `0.1.1`" in text
     assert "`0.2.0`" in text
 
 
@@ -153,6 +156,9 @@ def test_package_metadata_points_to_public_repository() -> None:
 def test_package_includes_ci_policy_doc_but_excludes_workflow_internals() -> None:
     package_files = set(_package_json()["files"])
 
+    assert "install.ps1" in package_files
+    assert "pyproject.toml" in package_files
+    assert "src/" in package_files
     assert "docs/ci-and-release-policy.md" in package_files
     assert "docs/registry-publication-strategy.md" in package_files
     assert ".github/dependabot.yml" not in package_files

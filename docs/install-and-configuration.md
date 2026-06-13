@@ -4,23 +4,64 @@ This package runs locally. You install the Python package, choose a local worksp
 
 This file is the canonical install matrix. The README keeps only a short quick start.
 
-Current package metadata version: `0.1.0`.
+Current package metadata version: `0.1.1`.
 
-Registry package channels are not live yet. The future package-channel decision,
-approval gates, and no-backfill policy are documented in the
+The npm launcher and PowerShell installer are the current quick-install paths.
+PyPI remains a future package channel. The package-channel decision, approval
+gates, and `v0.1.0` no-backfill policy are documented in the
 [registry publication strategy](registry-publication-strategy.md).
 
 ## Prerequisites
 
 - Python 3.11 or newer.
 - A shell such as PowerShell, Bash, zsh, or another POSIX-like shell.
-- Node.js/npm only if you are validating the optional npm launcher package.
+- Node.js/npm for the npm global launcher path.
+- PowerShell 5.1+ or PowerShell 7+ for the Windows installer path.
 - Playwright Chromium only for visible-browser workflows.
 
 Browser-free commands such as `dry-run` and `report` do not need a Playwright browser install. Commands that open a visible browser, such as `search`, `assist`, and browser-dependent `apply` preparation, need Chromium:
 
 ```powershell
 python -m playwright install chromium
+```
+
+## NPM Global Launcher
+
+The npm package provides the `linkedin-apply-assistant` command as a Node
+launcher. It delegates to the Python CLI and still needs Python 3.11+ plus the
+Python dependencies.
+
+```powershell
+npm install -g linkedin-apply-assistant
+linkedin-apply-assistant --help
+```
+
+If the launcher reports that the Python package is not importable, install the
+bundled Python package from the global npm package directory:
+
+```powershell
+$pkg = Join-Path (npm root -g) 'linkedin-apply-assistant'
+py -3 -m pip install $pkg
+linkedin-apply-assistant --help
+```
+
+## PowerShell Installer
+
+The PowerShell installer downloads the public GitHub source archive, creates a
+local virtual environment, installs the Python package, and writes
+`linkedin-apply-assistant.ps1` plus `.cmd` shims under the install directory. It
+does not require admin rights.
+
+```powershell
+$script = Join-Path $env:TEMP 'install-linkedin-apply-assistant.ps1'
+Invoke-WebRequest -UseBasicParsing https://raw.githubusercontent.com/MohammedGhazal09/linkedin-apply-assistant/main/install.ps1 -OutFile $script
+powershell -ExecutionPolicy Bypass -File $script
+```
+
+Optional visible-browser setup during install:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File $script -InstallBrowser
 ```
 
 ## Current Source Checkout
@@ -109,7 +150,7 @@ pipx install .
 linkedin-apply-assistant --help
 ```
 
-After a later approved registry release, the future pipx command shape will use the package name:
+After a later approved PyPI release, the future pipx command shape will use the package name:
 
 ```powershell
 pipx install linkedin-apply-assistant
@@ -142,14 +183,15 @@ Local package-shape validation uses npm packaging dry runs rather than registry 
 npm pack --dry-run --json
 ```
 
-After a later approved npm registry release, the future command shape will be:
+The global npm command shape is:
 
 ```powershell
 npm install -g linkedin-apply-assistant
 linkedin-apply-assistant --help
 ```
 
-Until that release exists, install the Python package from source first.
+If imports are missing after the npm install, use the bundled package-root pip
+command from the NPM Global Launcher section above.
 
 ## Browser-Free Commands
 

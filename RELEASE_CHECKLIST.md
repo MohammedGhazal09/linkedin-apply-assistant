@@ -16,6 +16,9 @@ The future first tag is `v0.1.0` only after Phase 24 and explicit release approv
 
 Release notes come from package `CHANGELOG.md` plus Phase 23 evidence in `.planning/phases/23-finalize-public-metadata-and-release-tooling-pub-07/23-VERIFICATION.md`.
 
+No-publish proof remains part of PUB-07 readiness: this phase verifies metadata,
+docs, and release tooling only.
+
 Manual approval point: stop before any `git push`, `git tag`, GitHub Release, npm publish, PyPI publish, TestPyPI publish, registry-token setup, public-visibility change, or other external action not explicitly authorized for the current phase. Approval must name the target repository or release channel.
 
 Rollback path for failed readiness: delete the generated candidate or archive, do not reuse the failed candidate, rerun `python scripts\release.py clean`, then rerun `python scripts\release.py verify`.
@@ -201,10 +204,10 @@ Channel decision:
 
 - GitHub Releases are the current source-only public channel.
 - `v0.1.0` remains GitHub-source-only and is not a registry backfill candidate.
-- PyPI is the primary future package registry.
+- PyPI is the primary future Python registry.
 - TestPyPI is required for the first registry release and publish-workflow
   changes.
-- npm is a secondary future thin-launcher channel that delegates to the Python
+- npm is a public thin-launcher channel that delegates to the Python
   CLI.
 - GitHub Packages remains deferred.
 
@@ -276,6 +279,81 @@ Rollback and remediation policy:
 - GitHub Releases: asset removal does not undo source archives or tags.
 - no executable registry rollback script is part of Phase 29.
 
+## v0.1.1 NPM and PowerShell Distribution Release
+
+This release makes the package downloadable through npm and a no-admin PowerShell installer while keeping `v0.1.0` GitHub-source-only.
+
+Scope:
+
+- Package version: `0.1.1`
+- npm package: `linkedin-apply-assistant`
+- npm dist-tag: `latest`
+- PowerShell installer: `install.ps1`
+- Repository: `MohammedGhazal09/linkedin-apply-assistant`
+- PyPI and TestPyPI remain future channels.
+
+Required files:
+
+- `package.json`
+- `pyproject.toml`
+- `src/linkedin_apply_assistant/__init__.py`
+- `bin/linkedin-apply-assistant.mjs`
+- `install.ps1`
+- `README.md`
+- `docs/install-and-configuration.md`
+- `docs/registry-publication-strategy.md`
+- `CHANGELOG.md`
+- `SECURITY.md`
+- `release-manifest.json`
+
+Required local evidence before public sync:
+
+```powershell
+python -m pytest tests\test_distribution_metadata.py tests\test_docs_smoke.py tests\test_npm_launcher.py tests\test_distribution_smoke.py tests\test_release_manifest.py tests\test_registry_publication_strategy.py tests\test_release_readiness.py -q
+python scripts\quality.py
+python scripts\release.py clean
+python scripts\release.py manifest --check
+python scripts\release.py verify
+npm pack --dry-run --json
+powershell -NoProfile -Command "$errors=$null; [System.Management.Automation.PSParser]::Tokenize((Get-Content -Raw .\install.ps1), [ref]$errors) | Out-Null; if($errors){$errors; exit 1}"
+```
+
+Required public verification after sync and before registry mutation:
+
+```powershell
+git -C W:\linkedin-apply-assistant-public status --short --branch
+git -C W:\linkedin-apply-assistant-public rev-parse HEAD
+npm view linkedin-apply-assistant version --json
+```
+
+The npm registry mutation is the verified manual publish of
+`linkedin-apply-assistant@0.1.1` to the npm public registry with the `latest`
+dist-tag. Use the already verified tarball contents; do not add lifecycle
+install, publish, or token scripts to `package.json`.
+
+Post-publish verification:
+
+```powershell
+npm view linkedin-apply-assistant version --json
+npm view linkedin-apply-assistant dist-tags --json
+```
+
+PowerShell installer verification after public sync:
+
+```powershell
+$target = Join-Path $env:TEMP 'linkedin-apply-assistant-install-smoke'
+powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1 -InstallDir $target -NoPath
+& (Join-Path $target 'bin\linkedin-apply-assistant.cmd') --help
+```
+
+Distribution safety boundary:
+
+- npm is a thin launcher and cannot install Python itself.
+- the launcher has no hidden install or registry publish code.
+- `install.ps1` downloads from the public GitHub source archive and does not use `Invoke-Expression` pipe-install behavior.
+- PyPI and TestPyPI uploads stay out of this release.
+- `v0.1.0` remains source-only and is not backfilled to any registry.
+
 ## Required Public Metadata
 
 `package.json` must include exactly these public project fields:
@@ -309,15 +387,15 @@ Rollback and remediation policy:
 | npm pack smoke | `npm pack --dry-run --json` reports the package-local npm launcher shape without sending anything to a registry. | Pending release review |
 | npm launcher guardrails | `python -m pytest tests\test_npm_launcher.py tests\test_distribution_smoke.py -q` confirms the launcher delegates to Python and has no hidden install or registry action. | Pending release review |
 | Public metadata drift | `python -m pytest tests\test_distribution_metadata.py tests\test_npm_launcher.py -q` confirms npm and Python metadata point to the canonical GitHub repository. | Pending release review |
-| Public source docs drift | `python -m pytest tests\test_docs_smoke.py tests\test_release_readiness.py -q` confirms source checkout docs use the canonical GitHub repository and registry/tag/release wording remains pending. | Pending release review |
+| Public source docs drift | `python -m pytest tests\test_docs_smoke.py tests\test_release_readiness.py -q` confirms source checkout docs use the canonical GitHub repository and npm, PowerShell, registry, tag, and release wording stays current. | Pending release review |
 | Missing community health files | `python -m pytest tests\test_community_health.py tests\test_docs_smoke.py tests\test_privacy_scans.py -q`, `python scripts\release.py manifest --check`, and `npm pack --dry-run --json` confirm support, governance, conduct, issue forms, PR template, privacy warnings, release manifest, and npm package inclusion. | Pending release review |
 | Real gitleaks evidence | `gitleaks version`, `python scripts\release.py verify`, and `python scripts\release.py scan <candidate-or-checkout>` record real gitleaks scans with `gitleaks: passed`. | Pending release review |
 | Terminal help drift | `python -m pytest tests\test_cli_help.py tests\test_config_diagnostics.py -q` confirms root help, subcommand help, and `linkedin-apply-assistant config check` stay actionable. | Pending release review |
 | Config diagnostics drift | `tests\test_config_diagnostics.py` confirms `config check` reports runtime paths without creating workspace files or directories. | Pending release review |
 | Command reference drift | `docs\commands.md` remains linked from README and install docs, and docs smoke checks keep command coverage current. | Pending release review |
 | Browser setup guidance drift | Help and docs keep `python -m playwright install chromium`, browser profile guidance, no-submit language, and browser submission remains disabled. | Pending release review |
-| Explicit no-publish approval | Stop before any remote, tag, GitHub Release, registry token setup, npm registry action, PyPI registry action, or TestPyPI registry action until explicit ship approval names the target channel. | Pending release review |
-| No-publish proof | Confirm no npm package, no PyPI project, no `v0.1.0` tag, and no GitHub Release `v0.1.0` exist unless a later approved phase created them. | Pending release review |
+| Explicit external-action approval | Stop before any remote, tag, GitHub Release, registry token setup, npm registry action, PyPI registry action, or TestPyPI registry action until explicit ship approval names the target channel. | Pending release review |
+| Registry state proof | Confirm npm, PyPI, TestPyPI, GitHub tag, and GitHub Release state match the current approved release channel before and after any external mutation. | Pending release review |
 
 Do not publish while any hard blocker remains unresolved.
 
@@ -329,8 +407,8 @@ Do not publish while any hard blocker remains unresolved.
 - `LEGAL.md` and `SAFETY.md` remain linked from README.
 - `MIGRATION.md` explains extraction scope and excluded root surfaces.
 - `CONTRIBUTING.md` and `SECURITY.md` are standalone-scoped.
-- Changelog has `Unreleased` and `0.1.0`.
-- Source, Python, and npm launcher install docs are current and tested.
+- Changelog has `Unreleased`, `0.1.1`, and `0.1.0`.
+- Source, Python, npm launcher, and PowerShell installer docs are current and tested.
 - Phase 21 terminal UX docs and help stay current: `docs\commands.md`, `tests\test_cli_help.py`, and `tests\test_config_diagnostics.py`.
 - Public package metadata points to the canonical GitHub repository and issue tracker.
 - Community health files and contribution templates are included in package and release checks.

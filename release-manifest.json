@@ -68,6 +68,7 @@
     {"path": "examples/dry_run_input.example.json", "category": "example"},
     {"path": "examples/reports/apply-audit.example.json", "category": "example"},
     {"path": "examples/reports/search-report.example.json", "category": "example"},
+    {"path": "install.ps1", "category": "installer"},
     {"path": "package.json", "category": "npm-metadata"},
     {"path": "pyproject.toml", "category": "package-metadata"},
     {"path": "release-manifest.json", "category": "release"},

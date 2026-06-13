@@ -6,13 +6,24 @@ This file follows the spirit of Keep a Changelog and uses semantic version label
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-06-13
+
 ### Added
 
 - Community health files and contribution templates for the standalone public
   repository package surface.
-- Registry publication strategy covering GitHub source releases, future PyPI,
-  TestPyPI, npm launcher, and deferred GitHub Packages channels without
-  changing package version or publishing to a registry.
+- Registry publication strategy covering GitHub source releases, PyPI,
+  TestPyPI, npm launcher, PowerShell installer, and deferred GitHub Packages
+  channels.
+- NPM global launcher release path for `linkedin-apply-assistant`.
+- PowerShell no-admin installer that downloads the public GitHub source archive,
+  creates a local virtual environment, writes command shims, and can optionally
+  install Playwright Chromium.
+
+### Changed
+
+- NPM package contents now include `pyproject.toml`, `src/`, and `install.ps1`
+  so the global launcher can point users at the bundled Python package.
 
 ## [0.1.0] - 2026-06-12
 

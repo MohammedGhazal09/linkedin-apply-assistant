@@ -30,7 +30,7 @@ def test_strategy_doc_exists_with_expected_name() -> None:
     assert STRATEGY_DOC.is_file()
     assert not PUBLISHING_DOC.exists()
     assert "# Registry Publication Strategy" in _read(STRATEGY_DOC)
-    assert "strategy only" in _lower(STRATEGY_DOC)
+    assert "registry and installer policy" in _lower(STRATEGY_DOC)
 
 
 def test_strategy_is_linked_from_public_docs_and_checklist() -> None:
@@ -52,12 +52,14 @@ def test_channel_matrix_records_current_and_future_channel_decisions() -> None:
         "github releases",
         "current source-only channel",
         "pypi",
-        "primary future registry",
+        "primary future python registry",
         "testpypi",
         "required preflight",
         "npm",
-        "secondary future thin-launcher channel",
+        "public thin-launcher channel",
         "delegates to the python cli",
+        "powershell installer",
+        "no-admin windows convenience path",
         "github packages",
         "deferred",
     )
@@ -75,14 +77,14 @@ def test_v010_stays_source_only_and_future_versions_are_policy_examples() -> Non
     pyproject = tomllib.loads(PYPROJECT.read_text(encoding="utf-8"))
     package = json.loads(PACKAGE_JSON.read_text(encoding="utf-8"))
 
-    assert pyproject["project"]["version"] == "0.1.0"
-    assert package["version"] == "0.1.0"
+    assert pyproject["project"]["version"] == "0.1.1"
+    assert package["version"] == "0.1.1"
     assert "`v0.1.0` stays a github source-only release" in text
     assert "no registry should backfill `0.1.0`" in text
     assert "first registry release must use a later explicitly approved package version" in text
-    assert "`0.1.1`" in text
+    assert "npm launcher release uses `0.1.1`" in text
     assert "`0.2.0`" in text
-    assert "semver policy decision" in text
+    assert "semver decisions" in text
 
 
 def test_ownership_authentication_and_permission_boundaries_are_documented() -> None:
@@ -117,6 +119,7 @@ def test_future_publish_gates_are_documented_without_running_live_checks() -> No
         "local wheel install smoke",
         "npm pack --dry-run --json",
         "package contents inspection",
+        "powershell installer parser check",
         "python scripts\\release.py manifest --check",
         "python scripts\\release.py verify",
         "gitleaks",
@@ -133,6 +136,7 @@ def test_future_approval_templates_name_required_fields() -> None:
         "testpypi preflight",
         "pypi release",
         "npm launcher release",
+        "powershell installer update",
         "github release asset work",
     ):
         assert section in text
@@ -163,11 +167,10 @@ def test_rollback_and_remediation_limits_are_documented() -> None:
         assert phrase in text
 
 
-def test_current_install_surfaces_do_not_claim_live_registry_availability() -> None:
+def test_current_install_surfaces_claim_npm_and_powershell_but_not_pypi() -> None:
     text = f"{_read(README)}\n{_read(INSTALL_DOC)}".lower()
 
     for forbidden in (
-        "published on npm",
         "published on pypi",
         "published on testpypi",
         "npm publish",
@@ -176,9 +179,10 @@ def test_current_install_surfaces_do_not_claim_live_registry_availability() -> N
     ):
         assert forbidden not in text
 
-    assert "npm and pypi registry releases remain pending" in text
-    assert "after a later approved registry release" in text
-    assert "after a later approved npm registry release" in text
+    assert "npm install -g linkedin-apply-assistant" in text
+    assert "powershell no-admin installer" in text
+    assert "install.ps1" in text
+    assert "pypi remains a future package channel" in text
 
 
 def test_release_checklist_has_phase29_gate_without_scripted_publish_commands() -> None:
@@ -201,5 +205,9 @@ def test_package_and_manifest_include_strategy_doc_and_policy_test() -> None:
     manifest_categories = {item["path"]: item["category"] for item in manifest["files"]}
 
     assert "docs/registry-publication-strategy.md" in package_files
+    assert "install.ps1" in package_files
+    assert "pyproject.toml" in package_files
+    assert "src/" in package_files
     assert manifest_categories["docs/registry-publication-strategy.md"] == "docs"
     assert manifest_categories["tests/test_registry_publication_strategy.py"] == "tests"
+    assert manifest_categories["install.ps1"] == "installer"

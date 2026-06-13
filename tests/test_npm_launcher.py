@@ -14,6 +14,7 @@ import pytest
 PACKAGE_ROOT = Path(__file__).resolve().parents[1]
 PACKAGE_JSON = PACKAGE_ROOT / "package.json"
 LAUNCHER = PACKAGE_ROOT / "bin" / "linkedin-apply-assistant.mjs"
+INSTALLER = PACKAGE_ROOT / "install.ps1"
 PYPROJECT = PACKAGE_ROOT / "pyproject.toml"
 INIT_PY = PACKAGE_ROOT / "src" / "linkedin_apply_assistant" / "__init__.py"
 SRC_DIR = PACKAGE_ROOT / "src"
@@ -45,7 +46,7 @@ def test_package_json_matches_python_identity() -> None:
     assert package["name"] == pyproject["name"] == _init_constant("APP_PACKAGE_NAME")
     assert package["version"] == pyproject["version"] == _init_constant("__version__")
     assert package["bin"] == {
-        _init_constant("APP_COMMAND_NAME"): "./bin/linkedin-apply-assistant.mjs"
+        _init_constant("APP_COMMAND_NAME"): "bin/linkedin-apply-assistant.mjs"
     }
     assert package["license"] == "MIT"
     assert package["type"] == "module"
@@ -64,6 +65,9 @@ def test_package_json_keeps_npm_contents_explicit_and_honest() -> None:
     assert isinstance(files, list)
     assert set(files) == {
         "bin/linkedin-apply-assistant.mjs",
+        "pyproject.toml",
+        "src/",
+        "install.ps1",
         "README.md",
         "SAFETY.md",
         "LEGAL.md",
@@ -142,6 +146,8 @@ def test_launcher_delegates_to_python_module_without_command_recursion() -> None
     assert 'stdio: "inherit"' in source
     assert 'spawnSync("linkedin-apply-assistant"' not in source
     assert "spawnSync('linkedin-apply-assistant'" not in source
+    assert "packageRoot" in source
+    assert 'python -m pip install "${packageRoot}"' in source
 
 
 def test_launcher_has_no_hidden_install_or_publish_code() -> None:
@@ -164,6 +170,18 @@ def test_launcher_has_no_hidden_install_or_publish_code() -> None:
         "node_auth_token",
     ):
         assert token not in code_without_guidance
+
+
+def test_powershell_installer_uses_download_file_not_invoke_expression() -> None:
+    source = INSTALLER.read_text(encoding="utf-8")
+    lowered = source.lower()
+
+    assert "invoke-webrequest" in lowered
+    assert "-outfile" in lowered
+    assert "expand-archive" in lowered
+    assert "python 3.11" in lowered
+    assert "invoke-expression" not in lowered
+    assert "iex" not in lowered
 
 
 def test_node_launcher_help_delegates_to_python_cli() -> None:

@@ -30,6 +30,7 @@ REQUIRED_DOCS = (
     "SUPPORT.md",
     "GOVERNANCE.md",
     "CODE_OF_CONDUCT.md",
+    "install.ps1",
     ".github/PULL_REQUEST_TEMPLATE.md",
     "CHANGELOG.md",
     "RELEASE_CHECKLIST.md",
@@ -143,6 +144,10 @@ def test_install_docs_cover_source_python_and_playwright_paths() -> None:
         'python -m pip install -e ".[dev]"',
         "pipx install .",
         "pipx install linkedin-apply-assistant",
+        "npm install -g linkedin-apply-assistant",
+        "powershell installer",
+        "install.ps1",
+        "py -3 -m pip install $pkg",
         "python -m linkedin_apply_assistant.cli --help",
         "npm pack --dry-run --json",
     ):
@@ -298,12 +303,12 @@ def test_readme_points_to_canonical_install_matrix_without_duplicating_it() -> N
     assert "python 3.11" in lower_text
     assert "linkedin-apply-assistant --help" in text
     assert "python -m linkedin_apply_assistant.cli --help" in text
-    assert "source, python, npm launcher, and playwright install matrix" in lower_text
+    assert "npm, powershell, source, python, and playwright install matrix" in lower_text
     assert "no-submit" in lower_text
 
     # README is a quick start; the exhaustive install matrix belongs in docs/.
     assert lower_text.count("pipx install") == 0
-    assert lower_text.count("npm install -g") == 0
+    assert lower_text.count("npm install -g") == 1
 
 
 def test_install_docs_avoid_live_availability_claims_before_ship_approval() -> None:
@@ -323,6 +328,8 @@ def test_install_docs_avoid_live_availability_claims_before_ship_approval() -> N
     assert "<future-public-repository-url>" not in text
     assert "future public repository" not in lower_text
     assert PUBLIC_REPO in text
+    assert "npm install -g linkedin-apply-assistant" in lower_text
+    assert "pypi remains a future package channel" in lower_text
 
 
 def test_docs_preserve_safety_and_platform_boundaries() -> None:

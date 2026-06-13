@@ -120,6 +120,7 @@ def test_manifest_includes_phase29_registry_strategy_files() -> None:
 
     assert categories["docs/registry-publication-strategy.md"] == "docs"
     assert categories["tests/test_registry_publication_strategy.py"] == "tests"
+    assert categories["install.ps1"] == "installer"
 
 
 def test_manifest_excludes_private_root_and_runtime_paths() -> None:
