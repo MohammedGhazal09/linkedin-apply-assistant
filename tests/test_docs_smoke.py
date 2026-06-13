@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+import io
 import json
 import re
 import shutil
 import subprocess
 import tarfile
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from urllib.parse import unquote
 
 import pytest
@@ -57,6 +58,39 @@ PUBLIC_REPO = "https://github.com/MohammedGhazal09/linkedin-apply-assistant"
 
 def _read(path: Path) -> str:
     return path.read_text(encoding="utf-8")
+
+
+def _safe_tar_target(root: Path, member: tarfile.TarInfo) -> Path:
+    member_path = PurePosixPath(member.name)
+    if member_path.is_absolute() or any(part in {"", ".", ".."} for part in member_path.parts):
+        raise ValueError(f"unsafe tar member path: {member.name}")
+
+    target = (root / Path(*member_path.parts)).resolve()
+    if target != root and root not in target.parents:
+        raise ValueError(f"tar member resolves outside target directory: {member.name}")
+    return target
+
+
+def _extract_tarball_safely(tarball: Path, target_dir: Path) -> None:
+    root = target_dir.resolve()
+    root.mkdir(parents=True, exist_ok=True)
+
+    with tarfile.open(tarball, "r:gz") as archive:
+        for member in archive.getmembers():
+            target = _safe_tar_target(root, member)
+            if member.isdir():
+                target.mkdir(parents=True, exist_ok=True)
+                continue
+            if not member.isfile():
+                raise ValueError(f"unsupported tar member type: {member.name}")
+
+            source = archive.extractfile(member)
+            if source is None:
+                raise ValueError(f"tar member has no file content: {member.name}")
+
+            target.parent.mkdir(parents=True, exist_ok=True)
+            with source, target.open("wb") as output:
+                shutil.copyfileobj(source, output)
 
 
 def _assert_doc_links_exist(doc_paths: tuple[Path, ...], root: Path) -> None:
@@ -374,6 +408,18 @@ def test_docs_do_not_reference_missing_package_files() -> None:
     _assert_doc_links_exist(DOC_PATHS, PACKAGE_ROOT)
 
 
+def test_safe_tarball_extraction_rejects_path_traversal(tmp_path: Path) -> None:
+    tarball = tmp_path / "malicious.tgz"
+    with tarfile.open(tarball, "w:gz") as archive:
+        payload = b"outside"
+        member = tarfile.TarInfo("../escape.txt")
+        member.size = len(payload)
+        archive.addfile(member, io.BytesIO(payload))
+
+    with pytest.raises(ValueError, match="unsafe tar member path"):
+        _extract_tarball_safely(tarball, tmp_path / "unpacked")
+
+
 def test_packed_npm_docs_do_not_reference_missing_package_files(tmp_path: Path) -> None:
     npm = shutil.which("npm")
     if npm is None:
@@ -394,8 +440,7 @@ def test_packed_npm_docs_do_not_reference_missing_package_files(tmp_path: Path) 
 
     tarball = tmp_path / payload[0]["filename"]
     unpack_dir = tmp_path / "unpacked"
-    with tarfile.open(tarball, "r:gz") as archive:
-        archive.extractall(unpack_dir)
+    _extract_tarball_safely(tarball, unpack_dir)
 
     packed_root = unpack_dir / "package"
     packed_doc_paths = tuple(
