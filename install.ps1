@@ -3,7 +3,9 @@ param(
     [string]$InstallDir = (Join-Path $env:LOCALAPPDATA "linkedin-apply-assistant"),
     [string]$Ref = "main",
     [switch]$InstallBrowser,
-    [switch]$NoPath
+    [switch]$NoPath,
+    [switch]$Update,
+    [switch]$CheckOnly
 )
 
 Set-StrictMode -Version 3.0
@@ -103,8 +105,19 @@ $binDir = Join-Path $installRoot "bin"
 $tempDir = Join-Path ([IO.Path]::GetTempPath()) ("linkedin-apply-assistant-" + [guid]::NewGuid())
 $zipPath = Join-Path $tempDir "source.zip"
 
+if ($CheckOnly) {
+    Write-Step "Installer source: $archiveUrl"
+    Write-Step "Install directory: $installRoot"
+    Write-Step "Ref: $Ref"
+    Write-Host ""
+    Write-Host "Run update:"
+    Write-Host "  powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1 -Update"
+    exit 0
+}
+
 try {
-    Write-Step "Installing from $archiveUrl"
+    $action = if ($Update) { "Updating" } else { "Installing" }
+    Write-Step "$action from $archiveUrl"
     New-Item -ItemType Directory -Force -Path $tempDir | Out-Null
     New-Item -ItemType Directory -Force -Path $installRoot | Out-Null
 
@@ -147,13 +160,22 @@ try {
     $psShim = Join-Path $binDir "linkedin-apply-assistant.ps1"
     $cmdShim = Join-Path $binDir "linkedin-apply-assistant.cmd"
 
-    @"
+@"
 param([Parameter(ValueFromRemainingArguments = `$true)][string[]]`$RemainingArgs)
+`$env:LINKEDIN_APPLY_ASSISTANT_INSTALL_CHANNEL = "powershell"
+`$env:LINKEDIN_APPLY_ASSISTANT_INSTALL_DIR = "$installRoot"
+`$env:LINKEDIN_APPLY_ASSISTANT_INSTALL_REF = "$Ref"
 & "$venvPython" -m linkedin_apply_assistant.cli @RemainingArgs
 exit `$LASTEXITCODE
 "@ | Set-Content -LiteralPath $psShim -Encoding UTF8
 
-    "@echo off`r`n`"$venvPython`" -m linkedin_apply_assistant.cli %*`r`n" |
+    @"
+@echo off
+set "LINKEDIN_APPLY_ASSISTANT_INSTALL_CHANNEL=powershell"
+set "LINKEDIN_APPLY_ASSISTANT_INSTALL_DIR=$installRoot"
+set "LINKEDIN_APPLY_ASSISTANT_INSTALL_REF=$Ref"
+"$venvPython" -m linkedin_apply_assistant.cli %*
+"@ |
         Set-Content -LiteralPath $cmdShim -Encoding ASCII
 
     if (-not $NoPath) {

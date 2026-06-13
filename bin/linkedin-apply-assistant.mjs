@@ -29,6 +29,9 @@ if (existsSync(localSrc)) {
     : localSrc;
 }
 
+launcherEnv.LINKEDIN_APPLY_ASSISTANT_INSTALL_CHANNEL = "npm";
+launcherEnv.LINKEDIN_APPLY_ASSISTANT_NPM_PACKAGE_ROOT = packageRoot;
+
 function printSetupGuidance(reason) {
   console.error(`linkedin-apply-assistant npm launcher could not start: ${reason}`);
   console.error("");

@@ -7,7 +7,7 @@ LinkedIn-apply-assistant is an experimental local browser automation assistant f
 
 The package is local-first. It does not require credentials in config, copied browser profiles, private documents, or generated reports to import, inspect, or run its deterministic tests.
 
-Current package metadata version: `0.1.4`.
+Current package metadata version: `0.1.5`.
 
 ## Safety Boundary
 
@@ -98,6 +98,7 @@ All commands accept these shared flags where relevant: `--workspace`, `--config`
 | `apply` | Prepare approval-gated application audit output. Browser submission remains disabled today. | `--input`, `--limit`, `--confirm-submit` |
 | `dry-run` | Validate local job input without browser or network submission. | `--input` |
 | `report` | Read a local JSON report and print a concise summary. | `report_json` |
+| `update` | Update through the detected npm or PowerShell install channel. | `--check`, `--method` |
 
 ## Documentation Map
 

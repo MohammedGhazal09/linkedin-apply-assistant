@@ -6,6 +6,23 @@ This file follows the spirit of Keep a Changelog and uses semantic version label
 
 ## [Unreleased]
 
+## [0.1.5] - 2026-06-13
+
+### Added
+
+- Added `linkedin-apply-assistant update` with automatic npm vs PowerShell
+  install-channel detection, plus `--check` and `--method` options.
+- Added PowerShell installer update flags: `install.ps1 -Update` and
+  `install.ps1 -CheckOnly`.
+
+### Changed
+
+- NPM launcher and PowerShell installer shims now mark their install channel so
+  the CLI can pick the correct updater automatically.
+- NPM package contents now include only Python source files from
+  `src/linkedin_apply_assistant/*.py`, preventing generated `__pycache__`
+  bytecode from entering npm tarballs after test runs.
+
 ## [0.1.4] - 2026-06-13
 
 ### Fixed

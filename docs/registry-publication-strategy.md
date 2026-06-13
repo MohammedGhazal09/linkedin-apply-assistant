@@ -7,17 +7,17 @@ asset, or grant publish-capable workflow permissions.
 
 The first GitHub source release, `v0.1.0`, remains source-only and is not a
 registry backfill candidate. The npm launcher release starts at `0.1.1`; the
-current CLI no-command/config-shorthand fix is `0.1.4`. PyPI and
-TestPyPI remain future channels.
+current npm and PowerShell update command release is `0.1.5`. PyPI and TestPyPI
+remain future channels.
 
 ## Current Boundary
 
-- Current package metadata version: `0.1.4`.
+- Current package metadata version: `0.1.5`.
 - Current install path: npm global launcher, PowerShell installer, source
   checkout, local Python install, local editable install, and local npm launcher
   dry-run validation.
 - Current public channel: GitHub repository source checkout and GitHub source
-  release archives; npm launcher package for `0.1.4` after the approved npm
+  release archives; npm launcher package for `0.1.5` after the approved npm
   patch publish step verifies successfully.
 - Not current: PyPI package, TestPyPI package, GitHub Packages package, PyPI
   trusted-publisher setup, npm trusted-publisher setup, registry automation,
@@ -34,14 +34,14 @@ action, and exact mutation.
 | GitHub Releases | Current source-only channel for `v0.1.0`. No wheel, sdist, npm tarball, or other release asset is attached. | Keep as the source-of-truth release record. Future assets require explicit approval. | Users can inspect and install from source without introducing registry auth or package-name ownership. | Clean local verification, changelog, release checklist, source manifest, approved tag or release mutation. | Explicit GitHub Release approval naming repo, tag, target commit, release state, and assets, if any. | `gh release view`, `gh release list`, source archive inspection, release manifest verification. | Remove mistaken assets from the release, correct the release notes, or delete a draft. Source tags need separate explicit remediation because asset removal does not undo a tag. |
 | PyPI | Not published and not reserved. | Primary future Python registry for direct package publication. | The project is a Python CLI with Playwright-driven browser automation, so PyPI is the natural long-term install path. | Maintainer or maintainer-controlled organization ownership, account 2FA where supported, PyPI Trusted Publishing with GitHub Actions OIDC, protected `pypi` environment, clean build and metadata gates. | Explicit PyPI approval naming repository, version, PyPI project, workflow or manual action, and exact upload mutation. | Read-only JSON API check, `python -m build`, `twine check dist/*`, local wheel install smoke, release scan, manifest verification. | Prefer yanking a broken release where appropriate. Deletion is disruptive and permanent; never rely on deleting and reusing the same version. |
 | TestPyPI | Not published and not reserved. | Required preflight for the first registry release and for publish-workflow changes. Routine patch preflights can become optional only after a proven release cycle. | It exercises package metadata, artifacts, and installer behavior before the real PyPI release. | Same artifact gates as PyPI, protected `testpypi` environment, explicit preflight approval, no production token. | Explicit TestPyPI approval naming repository, version, TestPyPI project, workflow or manual action, and exact upload mutation. | TestPyPI JSON API check, metadata validation, test-index install smoke, package contents review. | Clean up mistaken TestPyPI releases where possible and move forward with a new version if needed. Do not treat TestPyPI cleanup as production rollback proof. |
-| npm | Public thin-launcher channel for `0.1.4`; `0.1.1` was the first npm and PowerShell distribution release. | Keep as the JavaScript ecosystem convenience launcher; use PyPI later for direct Python package installs. | npm provides a familiar global command on systems that already have Node.js, but the launcher delegates to the Python CLI and cannot install Python itself. | Maintainer or maintainer-controlled ownership, account 2FA where supported, first-publish token bootstrap if trusted publishing cannot create the package, exact package contents review. | Explicit npm approval naming repository, version, npm package, workflow or manual action, and exact registry mutation. | `npm pack --dry-run --json`, package contents inspection, no lifecycle install/publish scripts, npm read-only registry check after publication. | Prefer deprecation for bad packages when unpublish criteria are not met. A used npm `package@version` cannot be reused, even after unpublish. |
+| npm | Public thin-launcher channel for `0.1.5`; `0.1.1` was the first npm and PowerShell distribution release. | Keep as the JavaScript ecosystem convenience launcher; use PyPI later for direct Python package installs. | npm provides a familiar global command on systems that already have Node.js, but the launcher delegates to the Python CLI and cannot install Python itself. | Maintainer or maintainer-controlled ownership, account 2FA where supported, first-publish token bootstrap if trusted publishing cannot create the package, exact package contents review. | Explicit npm approval naming repository, version, npm package, workflow or manual action, and exact registry mutation. | `npm pack --dry-run --json`, package contents inspection, no lifecycle install/publish scripts, npm read-only registry check after publication. | Prefer deprecation for bad packages when unpublish criteria are not met. A used npm `package@version` cannot be reused, even after unpublish. |
 | PowerShell installer | Current GitHub-hosted installer script at `install.ps1`; the README uses `irm ... \| iex` and the detailed install doc keeps a temp-file equivalent. | Keep as the no-admin Windows convenience path for users who prefer a single script. | It can create a local virtual environment, install dependencies from the public source archive, create command shims, and optionally install Chromium. | Public GitHub source archive availability, Python 3.11+, script syntax validation, and local install smoke. | Push the verified installer/docs to the public repository; no registry mutation is required for installer-only changes. | PowerShell parser check, temp-directory install smoke, command shim help smoke, and docs link checks. | Fix forward in `main`; users can reinstall from the corrected script or pin `-Ref` to a known tag. |
 | GitHub Packages | Not used. | Deferred. | It adds `packages: write` and authenticated consumption friction without improving the primary Python install path. | A future reason to publish a package to GitHub Packages, explicit package type, permission model, and install documentation. | Separate approval naming package type, repository, version, and exact mutation. | GitHub Packages read-only checks and package permission review. | Delete or deprecate only according to the package type's GitHub Packages support. This is not a substitute for PyPI/npm remediation. |
 
 ## Package Names
 
 The target package name for PyPI, TestPyPI, and npm publication is
-`linkedin-apply-assistant`. The current npm launcher version is `0.1.4`.
+`linkedin-apply-assistant`. The current npm launcher version is `0.1.5`.
 
 If the unscoped npm name becomes unavailable or ownership changes later, the
 fallback is a future scoped npm package under a maintainer-controlled scope.
@@ -60,6 +60,9 @@ fallback is a future scoped npm package under a maintainer-controlled scope.
   package page must be republished to replace the prior command.
 - The CLI no-command and `config` shorthand fix uses `0.1.4` because it changes
   user-facing terminal behavior without changing browser workflow behavior.
+- The npm and PowerShell update command release uses `0.1.5` because it adds a
+  user-facing updater and installer flags without changing browser workflow
+  behavior.
 - If user-visible behavior changes before registry publication, the default
   future version example is `0.2.0`.
 - Future behavior changes remain SemVer decisions at the publish phase.

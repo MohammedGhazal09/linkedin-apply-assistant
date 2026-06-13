@@ -171,6 +171,36 @@ linkedin-apply-assistant report examples/reports/apply-audit.example.json
 
 Use this command for local report review without opening a browser.
 
+## update
+
+`update` refreshes the installed command through the detected install channel.
+NPM-installed commands run npm; PowerShell-installed commands rerun the public
+installer.
+
+```powershell
+linkedin-apply-assistant update
+```
+
+Preview the selected updater without changing files:
+
+```powershell
+linkedin-apply-assistant update --check
+```
+
+Force a channel when detection is not what you want:
+
+```powershell
+linkedin-apply-assistant update --method npm
+linkedin-apply-assistant update --method powershell
+```
+
+Notes:
+
+- The npm method runs `npm install -g linkedin-apply-assistant@latest`.
+- The PowerShell method downloads `install.ps1` and runs it with `-Update`.
+- This command only updates the local package install. It does not submit
+  applications or change the browser safety boundary.
+
 ## Troubleshooting Pointers
 
 | Symptom | Next step |
@@ -180,6 +210,7 @@ Use this command for local report review without opening a browser.
 | Invalid JSON input | Re-run `dry-run` after checking the `--input` path and JSON format. |
 | Missing Playwright or Chromium | Run `python -m playwright install chromium`. |
 | Browser profile issue | Run `config check`, inspect the browser profile path, or choose another profile with `--browser-profile <path>`. |
+| Unsure how to update | Run `linkedin-apply-assistant update --check`. |
 | Unsure which command to use | Start with `linkedin-apply-assistant --help` and `linkedin-apply-assistant config check`. |
 
 More details are in [Troubleshooting](troubleshooting.md).

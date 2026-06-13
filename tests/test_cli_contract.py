@@ -42,12 +42,12 @@ def test_root_help_lists_public_subcommands() -> None:
     result = _run_cli("--help")
 
     assert result.returncode == 0, result.stderr
-    for command in ("search", "assist", "apply", "dry-run", "report"):
+    for command in ("search", "assist", "apply", "dry-run", "report", "update"):
         assert command in result.stdout
 
 
 def test_each_subcommand_help_exits_zero() -> None:
-    for command in ("search", "assist", "apply", "dry-run", "report"):
+    for command in ("search", "assist", "apply", "dry-run", "report", "update"):
         result = _run_cli(command, "--help")
 
         assert result.returncode == 0, f"{command}: {result.stderr}"
@@ -256,3 +256,85 @@ def test_report_command_prints_summary(tmp_path: Path) -> None:
     assert "processed: 3" in result.stdout
     assert "jobs: 2" in result.stdout
     assert "events: 1" in result.stdout
+
+
+def test_update_check_reports_npm_method_without_running_command(
+    monkeypatch: Any,
+    capsys: Any,
+) -> None:
+    monkeypatch.setenv(cli.INSTALL_CHANNEL_ENV, "npm")
+
+    code = cli.main(["update", "--check"])
+    output = capsys.readouterr().out
+
+    assert code == 0
+    assert "Current version:" in output
+    assert "Update method: npm" in output
+    assert "npm install -g linkedin-apply-assistant@latest" in output
+
+
+def test_update_check_reports_powershell_method_with_install_dir(
+    monkeypatch: Any,
+    capsys: Any,
+) -> None:
+    monkeypatch.setenv(cli.INSTALL_CHANNEL_ENV, "powershell")
+    monkeypatch.setenv(cli.INSTALL_DIR_ENV, r"C:\Users\Example\linkedin-apply-assistant")
+    monkeypatch.setattr(
+        cli.shutil, "which", lambda name: "powershell" if name == "powershell" else None
+    )
+
+    code = cli.main(["update", "--check"])
+    output = capsys.readouterr().out
+
+    assert code == 0
+    assert "Update method: powershell" in output
+    assert "install.ps1" in output
+    assert "-Update" in output
+    assert "-InstallDir 'C:\\Users\\Example\\linkedin-apply-assistant'" in output
+
+
+def test_update_npm_runs_expected_command(monkeypatch: Any) -> None:
+    calls: list[list[str]] = []
+
+    class Result:
+        returncode = 0
+
+    def fake_which(name: str) -> str | None:
+        return "npm" if name == "npm" else None
+
+    def fake_run(command: list[str], check: bool = False, **_: Any) -> Result:
+        calls.append(command)
+        assert check is False
+        return Result()
+
+    monkeypatch.setenv(cli.INSTALL_CHANNEL_ENV, "npm")
+    monkeypatch.setattr(cli.shutil, "which", fake_which)
+    monkeypatch.setattr(cli.subprocess, "run", fake_run)
+
+    assert cli.main(["update"]) == 0
+    assert calls == [["npm", "install", "-g", "linkedin-apply-assistant@latest"]]
+
+
+def test_update_powershell_runs_expected_command(monkeypatch: Any) -> None:
+    calls: list[list[str]] = []
+
+    class Result:
+        returncode = 0
+
+    def fake_which(name: str) -> str | None:
+        return "pwsh" if name == "pwsh" else None
+
+    def fake_run(command: list[str], check: bool = False, **_: Any) -> Result:
+        calls.append(command)
+        assert check is False
+        return Result()
+
+    monkeypatch.setenv(cli.INSTALL_CHANNEL_ENV, "powershell")
+    monkeypatch.setattr(cli.shutil, "which", fake_which)
+    monkeypatch.setattr(cli.subprocess, "run", fake_run)
+
+    assert cli.main(["update"]) == 0
+    assert len(calls) == 1
+    assert calls[0][:5] == ["pwsh", "-NoProfile", "-ExecutionPolicy", "Bypass", "-Command"]
+    assert "install.ps1" in calls[0][-1]
+    assert "-Update" in calls[0][-1]

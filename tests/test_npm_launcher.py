@@ -147,6 +147,8 @@ def test_launcher_delegates_to_python_module_without_command_recursion() -> None
     assert 'spawnSync("linkedin-apply-assistant"' not in source
     assert "spawnSync('linkedin-apply-assistant'" not in source
     assert "packageRoot" in source
+    assert "LINKEDIN_APPLY_ASSISTANT_INSTALL_CHANNEL" in source
+    assert '"npm"' in source
     assert 'python -m pip install "${packageRoot}"' in source
 
 
@@ -184,6 +186,21 @@ def test_powershell_installer_uses_download_file_not_invoke_expression() -> None
     assert "iex" not in lowered
 
 
+def test_powershell_installer_supports_update_and_channel_markers() -> None:
+    source = INSTALLER.read_text(encoding="utf-8")
+
+    for phrase in (
+        "[switch]$Update",
+        "[switch]$CheckOnly",
+        "LINKEDIN_APPLY_ASSISTANT_INSTALL_CHANNEL",
+        "LINKEDIN_APPLY_ASSISTANT_INSTALL_DIR",
+        "LINKEDIN_APPLY_ASSISTANT_INSTALL_REF",
+        "powershell",
+        "-Update",
+    ):
+        assert phrase in source
+
+
 def test_node_launcher_help_delegates_to_python_cli() -> None:
     if shutil.which("node") is None:
         pytest.skip("Node.js is not available; static npm launcher checks still ran")
@@ -206,3 +223,4 @@ def test_node_launcher_help_delegates_to_python_cli() -> None:
     assert "search" in result.stdout
     assert "assist" in result.stdout
     assert "dry-run" in result.stdout
+    assert "update" in result.stdout

@@ -413,6 +413,31 @@ def test_release_checklist_documents_v014_cli_missing_command_ux_release() -> No
         assert phrase in checklist
 
 
+def test_release_checklist_documents_v015_update_command_release() -> None:
+    checklist = _checklist_text()
+
+    for phrase in (
+        "v0.1.5 npm and powershell update command release",
+        "package version: `0.1.5`",
+        "github release: `v0.1.5`",
+        "runtime behavior, browser safety posture, and public apply/search boundaries are unchanged",
+        "linkedin-apply-assistant update",
+        "linkedin-apply-assistant update --check",
+        "install.ps1 -update",
+        "install.ps1 -checkonly",
+        "chooses npm or powershell from the detected",
+        "tests\\test_cli_help.py tests\\test_cli_contract.py",
+        "npm pack --dry-run --json",
+        "psparser",
+        "npm view linkedin-apply-assistant version --json",
+        "gh release view v0.1.5",
+        "no lifecycle install, publish, or token scripts",
+        "browser submission remains disabled",
+        "pypi and testpypi uploads stay out of this release",
+    ):
+        assert phrase in checklist
+
+
 def test_release_checklist_does_not_script_broad_tag_or_registry_publish() -> None:
     commands = _checklist_command_blocks()
 

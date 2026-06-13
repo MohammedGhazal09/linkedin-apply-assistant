@@ -4,10 +4,14 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import shutil
+import subprocess
 import sys
 from pathlib import Path
 from typing import Any
 
+from . import APP_PACKAGE_NAME, __version__
 from .apply_reports import RuntimeReportSink
 from .ats_handlers import DisabledSubmissionPolicy
 from .browser_sessions import PLAYWRIGHT_CHROMIUM_INSTALL_COMMAND, VisibleBrowserSessionFactory
@@ -29,6 +33,11 @@ REQUIRED_JOB_FIELDS = ("title", "company", "url", "location", "description")
 CONFIG_CHECK_COMMAND = "linkedin-apply-assistant config check"
 CONFIG_EXAMPLE_PATH = "configs/config.example.yml"
 QA_BANK_EXAMPLE_PATH = "configs/qa_bank.example.yml"
+PUBLIC_INSTALLER_URL = (
+    "https://raw.githubusercontent.com/MohammedGhazal09/linkedin-apply-assistant/main/install.ps1"
+)
+INSTALL_CHANNEL_ENV = "LINKEDIN_APPLY_ASSISTANT_INSTALL_CHANNEL"
+INSTALL_DIR_ENV = "LINKEDIN_APPLY_ASSISTANT_INSTALL_DIR"
 NO_SUBMIT_HELP = (
     "Safety: public workflows are no-submit by default; assist is fill-only and "
     "browser submission remains disabled in apply."
@@ -107,6 +116,11 @@ Common workflows:
 Outputs use the resolved output directory and reports are written under its reports folder.
 {NO_SUBMIT_HELP}
 """,
+    )
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"%(prog)s {__version__}",
     )
     subparsers = parser.add_subparsers(dest="command")
 
@@ -245,6 +259,41 @@ This command is browser-free and reads an existing local report file.
     )
     report.add_argument("report_json", help="Path to the report JSON file.")
     report.set_defaults(handler=_handle_report)
+
+    update = subparsers.add_parser(
+        "update",
+        parents=[subcommand_common],
+        formatter_class=formatter,
+        help="Update the installed package through npm or the PowerShell installer.",
+        description=(
+            "Update linkedin-apply-assistant through the detected install channel. "
+            "npm installs use npm; PowerShell installs rerun the public installer."
+        ),
+        epilog=f"""Examples:
+  linkedin-apply-assistant update
+  linkedin-apply-assistant update --check
+  linkedin-apply-assistant update --method npm
+  linkedin-apply-assistant update --method powershell
+
+NPM update command:
+  npm install -g {APP_PACKAGE_NAME}@latest
+
+PowerShell update command:
+  irm {PUBLIC_INSTALLER_URL} | iex
+""",
+    )
+    update.add_argument(
+        "--method",
+        choices=("auto", "npm", "powershell"),
+        default="auto",
+        help="Choose the update mechanism. Auto uses the detected install channel.",
+    )
+    update.add_argument(
+        "--check",
+        action="store_true",
+        help="Show the selected update command without running it.",
+    )
+    update.set_defaults(handler=_handle_update)
 
     return parser
 
@@ -552,6 +601,96 @@ def _handle_report(args: argparse.Namespace) -> int:
         print(f"Report summary: list items={len(payload)}")
     else:
         print(f"Report summary: {type(payload).__name__}")
+    return 0
+
+
+def _detect_update_method(requested: str) -> str:
+    if requested != "auto":
+        return requested
+
+    channel = os.environ.get(INSTALL_CHANNEL_ENV, "").strip().lower()
+    if channel in {"npm", "powershell"}:
+        return channel
+
+    npm = shutil.which("npm")
+    if npm:
+        try:
+            result = subprocess.run(
+                [npm, "root", "-g"],
+                text=True,
+                capture_output=True,
+                check=False,
+                timeout=10,
+            )
+        except (OSError, subprocess.SubprocessError):
+            result = None
+        if result and result.returncode == 0:
+            package_root = Path(result.stdout.strip()) / APP_PACKAGE_NAME / "package.json"
+            if package_root.exists():
+                return "npm"
+
+    if os.name == "nt":
+        return "powershell"
+    return "npm"
+
+
+def _powershell_quote(value: str) -> str:
+    return "'" + value.replace("'", "''") + "'"
+
+
+def _powershell_update_command_parts() -> tuple[list[str], str]:
+    powershell = shutil.which("pwsh") or shutil.which("powershell")
+    if not powershell:
+        return [], f"irm {PUBLIC_INSTALLER_URL} | iex"
+
+    install_dir = os.environ.get(INSTALL_DIR_ENV, "").strip()
+    command = (
+        "$script = Join-Path $env:TEMP 'linkedin-apply-assistant-install.ps1'; "
+        f"iwr {PUBLIC_INSTALLER_URL} -OutFile $script; "
+        "& $script -Update"
+    )
+    if install_dir:
+        command = f"{command} -InstallDir {_powershell_quote(install_dir)}"
+    return [powershell, "-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", command], command
+
+
+def _npm_update_command_parts() -> tuple[list[str], str]:
+    npm = shutil.which("npm")
+    command = ["npm", "install", "-g", f"{APP_PACKAGE_NAME}@latest"]
+    display = " ".join(command)
+    return ([npm, *command[1:]] if npm else [], display)
+
+
+def _handle_update(args: argparse.Namespace) -> int:
+    method = _detect_update_method(args.method)
+    if method == "npm":
+        command, display = _npm_update_command_parts()
+    else:
+        command, display = _powershell_update_command_parts()
+
+    print(f"Current version: {__version__}")
+    print(f"Update method: {method}")
+    print(f"Update command: {display}")
+
+    if args.check:
+        return 0
+
+    if not command:
+        _print_error(
+            f"{method} updater is not available on PATH.",
+            f"Run manually: {display}",
+        )
+        return 2
+
+    result = subprocess.run(command, check=False)
+    if result.returncode != 0:
+        _print_error(
+            f"Update command failed with exit code {result.returncode}.",
+            f"Run manually: {display}",
+        )
+        return int(result.returncode or 1)
+
+    print("Update complete.")
     return 0
 
 

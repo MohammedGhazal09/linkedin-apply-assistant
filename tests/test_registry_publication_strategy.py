@@ -77,8 +77,8 @@ def test_v010_stays_source_only_and_future_versions_are_policy_examples() -> Non
     pyproject = tomllib.loads(PYPROJECT.read_text(encoding="utf-8"))
     package = json.loads(PACKAGE_JSON.read_text(encoding="utf-8"))
 
-    assert pyproject["project"]["version"] == "0.1.4"
-    assert package["version"] == "0.1.4"
+    assert pyproject["project"]["version"] == "0.1.5"
+    assert package["version"] == "0.1.5"
     assert "`v0.1.0` stays a github source-only release" in text
     assert "no registry should backfill `0.1.0`" in text
     assert "first registry release must use a later explicitly approved package version" in text
@@ -86,6 +86,7 @@ def test_v010_stays_source_only_and_future_versions_are_policy_examples() -> Non
     assert "docs-only npm package page refresh uses `0.1.2`" in text
     assert "powershell short-command readme refresh uses `0.1.3`" in text
     assert "cli no-command and `config` shorthand fix uses `0.1.4`" in text
+    assert "npm and powershell update command release uses `0.1.5`" in text
     assert "`0.2.0`" in text
     assert "semver decisions" in text
 

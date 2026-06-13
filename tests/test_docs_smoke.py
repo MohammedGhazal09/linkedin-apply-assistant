@@ -87,7 +87,7 @@ def test_required_public_docs_exist() -> None:
 def test_readme_names_public_cli_commands() -> None:
     text = _read(README).lower()
 
-    for command in ("search", "assist", "apply", "dry-run", "report"):
+    for command in ("search", "assist", "apply", "dry-run", "report", "update"):
         assert re.search(rf"`{re.escape(command)}`", text)
 
 
@@ -145,6 +145,7 @@ def test_install_docs_cover_source_python_and_playwright_paths() -> None:
         "pipx install .",
         "pipx install linkedin-apply-assistant",
         "npm install -g linkedin-apply-assistant",
+        "npm install -g linkedin-apply-assistant@latest",
         "powershell installer",
         "install.ps1",
         "irm https://raw.githubusercontent.com/mohammedghazal09/linkedin-apply-assistant/main/install.ps1 | iex",
@@ -153,6 +154,10 @@ def test_install_docs_cover_source_python_and_playwright_paths() -> None:
         "py -3 -m pip install $pkg",
         "python -m linkedin_apply_assistant.cli --help",
         "npm pack --dry-run --json",
+        "linkedin-apply-assistant update",
+        "linkedin-apply-assistant update --check",
+        "& $script -update",
+        "& $script -checkonly",
     ):
         assert phrase.lower() in lower_text
 
@@ -174,6 +179,7 @@ def test_command_reference_covers_first_run_workflows_and_paths() -> None:
         "apply",
         "dry-run",
         "report",
+        "update",
         "config file",
         "q&a bank",
         "browser profile",
@@ -189,6 +195,8 @@ def test_command_reference_covers_first_run_workflows_and_paths() -> None:
         "fill-only",
         "browser submission remains disabled",
         "try: linkedin-apply-assistant config check",
+        "linkedin-apply-assistant update --check",
+        "npm install -g linkedin-apply-assistant@latest",
     ):
         assert phrase in lower_text
 

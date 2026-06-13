@@ -41,7 +41,7 @@ def test_root_help_includes_first_run_safety_and_outputs() -> None:
     help_text = _assert_help()
     lower_text = help_text.lower()
 
-    for command in ("config", "search", "assist", "apply", "dry-run", "report"):
+    for command in ("config", "search", "assist", "apply", "dry-run", "report", "update"):
         assert command in lower_text
     for phrase in (
         "config check",
@@ -120,6 +120,19 @@ def test_browser_free_help_includes_concise_examples() -> None:
         )
 
 
+def test_update_help_describes_npm_and_powershell_methods() -> None:
+    help_text = _assert_help("update").lower()
+
+    for phrase in (
+        "npm install -g linkedin-apply-assistant@latest",
+        "powershell update command",
+        "--check",
+        "--method",
+        "detected install channel",
+    ):
+        assert phrase in help_text
+
+
 def test_help_does_not_introduce_legacy_unsafe_flags() -> None:
     source_text = CLI_SOURCE.read_text(encoding="utf-8")
     help_texts = [
@@ -127,6 +140,7 @@ def test_help_does_not_introduce_legacy_unsafe_flags() -> None:
         _assert_help("search"),
         _assert_help("assist"),
         _assert_help("apply"),
+        _assert_help("update"),
         _assert_help("config", "check"),
     ]
     combined = "\n".join(help_texts + [source_text])

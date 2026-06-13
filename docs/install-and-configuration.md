@@ -4,7 +4,7 @@ This package runs locally. You install the Python package, choose a local worksp
 
 This file is the canonical install matrix. The README keeps only a short quick start.
 
-Current package metadata version: `0.1.4`.
+Current package metadata version: `0.1.5`.
 
 The npm launcher and PowerShell no-admin installer are the current quick-install paths.
 PyPI remains a future package channel. The package-channel decision, approval
@@ -55,6 +55,19 @@ npm install -g linkedin-apply-assistant
 linkedin-apply-assistant --help
 ```
 
+Update:
+
+```powershell
+linkedin-apply-assistant update
+linkedin-apply-assistant update --check
+```
+
+Direct npm equivalent:
+
+```powershell
+npm install -g linkedin-apply-assistant@latest
+```
+
 If the launcher reports that the Python package is not importable, install the
 bundled Python package from the global npm package directory:
 
@@ -75,12 +88,33 @@ does not require admin rights.
 irm https://raw.githubusercontent.com/MohammedGhazal09/linkedin-apply-assistant/main/install.ps1 | iex
 ```
 
+Update:
+
+```powershell
+linkedin-apply-assistant update
+linkedin-apply-assistant update --check
+```
+
 Inspectable temp-file equivalent:
 
 ```powershell
 $script = Join-Path $env:TEMP 'linkedin-apply-assistant-install.ps1'
 iwr https://raw.githubusercontent.com/MohammedGhazal09/linkedin-apply-assistant/main/install.ps1 -OutFile $script
 & $script
+```
+
+Inspectable update equivalent:
+
+```powershell
+$script = Join-Path $env:TEMP 'linkedin-apply-assistant-install.ps1'
+iwr https://raw.githubusercontent.com/MohammedGhazal09/linkedin-apply-assistant/main/install.ps1 -OutFile $script
+& $script -Update
+```
+
+Check installer settings without changing files:
+
+```powershell
+& $script -CheckOnly
 ```
 
 Optional visible-browser setup during install:

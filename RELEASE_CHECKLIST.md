@@ -487,6 +487,56 @@ Distribution safety boundary:
 - `config` shorthand remains read-only and creates no files or directories
 - PyPI and TestPyPI uploads stay out of this release
 
+## v0.1.5 NPM and PowerShell Update Command Release
+
+This patch adds an explicit update path for both public install channels.
+
+Scope:
+
+- Package version: `0.1.5`
+- npm package: `linkedin-apply-assistant`
+- npm dist-tag: `latest`
+- GitHub Release: `v0.1.5`
+- Repository: `MohammedGhazal09/linkedin-apply-assistant`
+- Runtime behavior, browser safety posture, and public apply/search boundaries are unchanged.
+- `linkedin-apply-assistant update` chooses npm or PowerShell from the detected
+  install channel.
+- `linkedin-apply-assistant update --check` prints the selected updater without
+  changing files.
+- `install.ps1 -Update` reruns the no-admin installer against the same install
+  directory when the PowerShell shim provides it.
+- `install.ps1 -CheckOnly` prints installer settings without changing files.
+- PyPI and TestPyPI remain future channels.
+
+Required local evidence before public sync:
+
+```powershell
+python -m pytest tests\test_cli_help.py tests\test_cli_contract.py tests\test_config_diagnostics.py tests\test_distribution_metadata.py tests\test_docs_smoke.py tests\test_registry_publication_strategy.py tests\test_release_readiness.py tests\test_npm_launcher.py tests\test_distribution_smoke.py tests\test_release_manifest.py -q
+python scripts\release.py clean
+python scripts\release.py manifest --check
+python scripts\release.py verify
+npm pack --dry-run --json
+powershell -NoProfile -Command "$errors=$null; [System.Management.Automation.PSParser]::Tokenize((Get-Content -Raw .\install.ps1), [ref]$errors) | Out-Null; if($errors){$errors; exit 1}"
+linkedin-apply-assistant update --check
+```
+
+Post-publish verification:
+
+```powershell
+npm view linkedin-apply-assistant version --json
+npm view linkedin-apply-assistant dist-tags --json
+linkedin-apply-assistant update --check
+gh release view v0.1.5 --repo MohammedGhazal09/linkedin-apply-assistant --json tagName,name,url,isDraft,isPrerelease,targetCommitish
+```
+
+Distribution safety boundary:
+
+- no lifecycle install, publish, or token scripts are added to `package.json`
+- `update` runs only the selected package updater and does not touch browser
+  profiles, configs, Q&A banks, outputs, or reports
+- browser submission remains disabled
+- PyPI and TestPyPI uploads stay out of this release
+
 ## Required Public Metadata
 
 `package.json` must include exactly these public project fields:
@@ -540,7 +590,7 @@ Do not publish while any hard blocker remains unresolved.
 - `LEGAL.md` and `SAFETY.md` remain linked from README.
 - `MIGRATION.md` explains extraction scope and excluded root surfaces.
 - `CONTRIBUTING.md` and `SECURITY.md` are standalone-scoped.
-- Changelog has `Unreleased`, `0.1.4`, `0.1.3`, `0.1.2`, `0.1.1`, and `0.1.0`.
+- Changelog has `Unreleased`, `0.1.5`, `0.1.4`, `0.1.3`, `0.1.2`, `0.1.1`, and `0.1.0`.
 - Source, Python, npm launcher, and PowerShell installer docs are current and tested.
 - Phase 21 terminal UX docs and help stay current: `docs\commands.md`, `tests\test_cli_help.py`, and `tests\test_config_diagnostics.py`.
 - Public package metadata points to the canonical GitHub repository and issue tracker.
