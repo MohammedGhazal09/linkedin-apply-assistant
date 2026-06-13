@@ -368,6 +368,30 @@ def test_release_checklist_documents_v012_install_docs_patch_release() -> None:
         assert phrase in checklist
 
 
+def test_release_checklist_documents_v013_short_powershell_release() -> None:
+    checklist = _checklist_text()
+
+    for phrase in (
+        "v0.1.3 powershell short installer command release",
+        "irm https://raw.githubusercontent.com/mohammedghazal09/linkedin-apply-assistant/main/install.ps1 | iex",
+        "package version: `0.1.3`",
+        "github release: `v0.1.3`",
+        "runtime behavior, browser safety posture, and public cli contract are unchanged",
+        "longer temp-file powershell installer form remains documented",
+        "tests\\test_distribution_metadata.py tests\\test_docs_smoke.py",
+        "npm pack --dry-run --json",
+        "npm view linkedin-apply-assistant version --json",
+        "npm view linkedin-apply-assistant dist-tags --json",
+        "gh release view v0.1.3",
+        "docs-only package refresh",
+        "immutable npm readme",
+        "no lifecycle install, publish, or token scripts",
+        "`install.ps1` itself is unchanged",
+        "pypi and testpypi uploads stay out of this release",
+    ):
+        assert phrase in checklist
+
+
 def test_release_checklist_does_not_script_broad_tag_or_registry_publish() -> None:
     commands = _checklist_command_blocks()
 

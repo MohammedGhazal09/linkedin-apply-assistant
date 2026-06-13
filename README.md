@@ -7,7 +7,7 @@ LinkedIn-apply-assistant is an experimental local browser automation assistant f
 
 The package is local-first. It does not require credentials in config, copied browser profiles, private documents, or generated reports to import, inspect, or run its deterministic tests.
 
-Current package metadata version: `0.1.2`.
+Current package metadata version: `0.1.3`.
 
 ## Safety Boundary
 
@@ -37,7 +37,7 @@ npm install -g linkedin-apply-assistant
 Windows PowerShell:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -Command "iwr https://raw.githubusercontent.com/MohammedGhazal09/linkedin-apply-assistant/main/install.ps1 -OutFile $env:TEMP\linkedin-apply-assistant-install.ps1; & $env:TEMP\linkedin-apply-assistant-install.ps1"
+irm https://raw.githubusercontent.com/MohammedGhazal09/linkedin-apply-assistant/main/install.ps1 | iex
 ```
 
 Verify:
@@ -47,7 +47,7 @@ linkedin-apply-assistant --help
 ```
 
 Use Python 3.11 or newer. The npm package is the current public registry path;
-the PowerShell command downloads the installer from GitHub and runs it locally.
+the PowerShell command downloads and runs the installer from GitHub.
 See [docs/install-and-configuration.md](docs/install-and-configuration.md) for
 source, Python, Playwright, and troubleshooting details. PyPI remains a future
 package channel; the package-channel decision is documented in the

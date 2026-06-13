@@ -44,8 +44,8 @@ def test_python_and_npm_package_identity_stays_synchronized() -> None:
     package = _package_json()
 
     assert pyproject_project["name"] == "linkedin-apply-assistant"
-    assert pyproject_project["version"] == "0.1.2"
-    assert package["version"] == "0.1.2"
+    assert pyproject_project["version"] == "0.1.3"
+    assert package["version"] == "0.1.3"
     assert package["name"] == pyproject_project["name"]
     assert package["version"] == pyproject_project["version"]
     assert _init_constant("__version__") == pyproject_project["version"]
@@ -83,7 +83,7 @@ def test_distribution_docs_and_release_surfaces_include_identity() -> None:
 
     for path, text in docs.items():
         assert "linkedin-apply-assistant" in text, path
-        assert "0.1.2" in text, path
+        assert "0.1.3" in text, path
 
     assert "linkedin_apply_assistant" in docs["docs/install-and-configuration.md"]
     assert "python -m pip install ." in docs["docs/install-and-configuration.md"]
@@ -115,6 +115,7 @@ def test_changelog_tracks_v010_release_without_registry_publication_claims() -> 
     changelog_lower = changelog.lower()
 
     assert "## [Unreleased]" in changelog
+    assert "## [0.1.3] - 2026-06-13" in changelog
     assert "## [0.1.2] - 2026-06-13" in changelog
     assert "## [0.1.1] - 2026-06-13" in changelog
     assert "## [0.1.0] - 2026-06-12" in changelog
@@ -132,11 +133,12 @@ def test_changelog_tracks_v010_release_without_registry_publication_claims() -> 
 def test_registry_strategy_keeps_current_version_source_only() -> None:
     text = REGISTRY_STRATEGY_DOC.read_text(encoding="utf-8").lower()
 
-    assert "current package metadata version: `0.1.2`" in text
+    assert "current package metadata version: `0.1.3`" in text
     assert "`v0.1.0` stays a github source-only release" in text
     assert "no registry should backfill `0.1.0`" in text
     assert "npm launcher release uses `0.1.1`" in text
     assert "docs-only npm package page refresh uses `0.1.2`" in text
+    assert "powershell short-command readme refresh uses `0.1.3`" in text
     assert "`0.2.0`" in text
 
 

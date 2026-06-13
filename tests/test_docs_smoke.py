@@ -147,7 +147,8 @@ def test_install_docs_cover_source_python_and_playwright_paths() -> None:
         "npm install -g linkedin-apply-assistant",
         "powershell installer",
         "install.ps1",
-        "powershell -noprofile -executionpolicy bypass -command",
+        "irm https://raw.githubusercontent.com/mohammedghazal09/linkedin-apply-assistant/main/install.ps1 | iex",
+        "inspectable temp-file equivalent",
         "raw.githubusercontent.com/mohammedghazal09/linkedin-apply-assistant/main/install.ps1",
         "py -3 -m pip install $pkg",
         "python -m linkedin_apply_assistant.cli --help",
@@ -314,6 +315,13 @@ def test_readme_points_to_canonical_install_matrix_without_duplicating_it() -> N
     # README is a quick start; detailed install paths belong in docs/.
     assert lower_text.count("pipx install") == 0
     assert lower_text.count("npm install -g") == 1
+    assert (
+        lower_text.count(
+            "irm https://raw.githubusercontent.com/mohammedghazal09/linkedin-apply-assistant/main/install.ps1 | iex"
+        )
+        == 1
+    )
+    assert "powershell -noprofile -executionpolicy bypass -command" not in lower_text
     assert "py -3 -m pip install $pkg" not in lower_text
     assert 'python -m pip install -e ".[dev]"' not in lower_text
     assert "python -m linkedin_apply_assistant.cli --help" not in lower_text

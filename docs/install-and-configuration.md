@@ -4,7 +4,7 @@ This package runs locally. You install the Python package, choose a local worksp
 
 This file is the canonical install matrix. The README keeps only a short quick start.
 
-Current package metadata version: `0.1.2`.
+Current package metadata version: `0.1.3`.
 
 The npm launcher and PowerShell no-admin installer are the current quick-install paths.
 PyPI remains a future package channel. The package-channel decision, approval
@@ -23,12 +23,12 @@ linkedin-apply-assistant --help
 Windows PowerShell without npm:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -Command "iwr https://raw.githubusercontent.com/MohammedGhazal09/linkedin-apply-assistant/main/install.ps1 -OutFile $env:TEMP\linkedin-apply-assistant-install.ps1; & $env:TEMP\linkedin-apply-assistant-install.ps1"
+irm https://raw.githubusercontent.com/MohammedGhazal09/linkedin-apply-assistant/main/install.ps1 | iex
 ```
 
-The PowerShell command downloads [install.ps1](../install.ps1) from GitHub raw
-content to your temporary directory, then runs that local file. It does not use
-an `Invoke-Expression` pipe-install pattern.
+The PowerShell command is the short `Invoke-RestMethod` pipe-to-`Invoke-Expression`
+form. It downloads [install.ps1](../install.ps1) from GitHub raw content and
+runs it in the current PowerShell session.
 
 ## Prerequisites
 
@@ -72,13 +72,23 @@ local virtual environment, installs the Python package, and writes
 does not require admin rights.
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -Command "iwr https://raw.githubusercontent.com/MohammedGhazal09/linkedin-apply-assistant/main/install.ps1 -OutFile $env:TEMP\linkedin-apply-assistant-install.ps1; & $env:TEMP\linkedin-apply-assistant-install.ps1"
+irm https://raw.githubusercontent.com/MohammedGhazal09/linkedin-apply-assistant/main/install.ps1 | iex
+```
+
+Inspectable temp-file equivalent:
+
+```powershell
+$script = Join-Path $env:TEMP 'linkedin-apply-assistant-install.ps1'
+iwr https://raw.githubusercontent.com/MohammedGhazal09/linkedin-apply-assistant/main/install.ps1 -OutFile $script
+& $script
 ```
 
 Optional visible-browser setup during install:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -Command "iwr https://raw.githubusercontent.com/MohammedGhazal09/linkedin-apply-assistant/main/install.ps1 -OutFile $env:TEMP\linkedin-apply-assistant-install.ps1; & $env:TEMP\linkedin-apply-assistant-install.ps1 -InstallBrowser"
+$script = Join-Path $env:TEMP 'linkedin-apply-assistant-install.ps1'
+iwr https://raw.githubusercontent.com/MohammedGhazal09/linkedin-apply-assistant/main/install.ps1 -OutFile $script
+& $script -InstallBrowser
 ```
 
 ## Current Source Checkout

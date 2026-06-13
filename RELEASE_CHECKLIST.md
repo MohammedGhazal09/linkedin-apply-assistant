@@ -395,6 +395,54 @@ Distribution safety boundary:
 - `install.ps1` continues to avoid `Invoke-Expression` pipe-install behavior
 - PyPI and TestPyPI uploads stay out of this release
 
+## v0.1.3 PowerShell Short Installer Command Release
+
+This patch refreshes the README, npm package page, and GitHub Release wording to
+use the shorter PowerShell installer command:
+
+```powershell
+irm https://raw.githubusercontent.com/MohammedGhazal09/linkedin-apply-assistant/main/install.ps1 | iex
+```
+
+Scope:
+
+- Package version: `0.1.3`
+- npm package: `linkedin-apply-assistant`
+- npm dist-tag: `latest`
+- GitHub Release: `v0.1.3`
+- Repository: `MohammedGhazal09/linkedin-apply-assistant`
+- Runtime behavior, browser safety posture, and public CLI contract are unchanged.
+- The longer temp-file PowerShell installer form remains documented for optional
+  arguments such as `-InstallBrowser`.
+- PyPI and TestPyPI remain future channels.
+
+Required local evidence before public sync:
+
+```powershell
+python -m pytest tests\test_distribution_metadata.py tests\test_docs_smoke.py tests\test_registry_publication_strategy.py tests\test_release_readiness.py tests\test_npm_launcher.py tests\test_distribution_smoke.py tests\test_release_manifest.py -q
+python scripts\release.py clean
+python scripts\release.py manifest --check
+python scripts\release.py verify
+npm pack --dry-run --json
+```
+
+Post-publish verification:
+
+```powershell
+npm view linkedin-apply-assistant version --json
+npm view linkedin-apply-assistant dist-tags --json
+gh release view v0.1.3 --repo MohammedGhazal09/linkedin-apply-assistant --json tagName,name,url,isDraft,isPrerelease,targetCommitish
+```
+
+Distribution safety boundary:
+
+- this is a docs-only package refresh to update the immutable npm README for the
+  latest package version
+- no lifecycle install, publish, or token scripts are added to `package.json`
+- `install.ps1` itself is unchanged; the shorter command only changes how users
+  download and run that public script
+- PyPI and TestPyPI uploads stay out of this release
+
 ## Required Public Metadata
 
 `package.json` must include exactly these public project fields:
@@ -448,7 +496,7 @@ Do not publish while any hard blocker remains unresolved.
 - `LEGAL.md` and `SAFETY.md` remain linked from README.
 - `MIGRATION.md` explains extraction scope and excluded root surfaces.
 - `CONTRIBUTING.md` and `SECURITY.md` are standalone-scoped.
-- Changelog has `Unreleased`, `0.1.2`, `0.1.1`, and `0.1.0`.
+- Changelog has `Unreleased`, `0.1.3`, `0.1.2`, `0.1.1`, and `0.1.0`.
 - Source, Python, npm launcher, and PowerShell installer docs are current and tested.
 - Phase 21 terminal UX docs and help stay current: `docs\commands.md`, `tests\test_cli_help.py`, and `tests\test_config_diagnostics.py`.
 - Public package metadata points to the canonical GitHub repository and issue tracker.

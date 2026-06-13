@@ -6,6 +6,15 @@ This file follows the spirit of Keep a Changelog and uses semantic version label
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-06-13
+
+### Changed
+
+- Replaced the README and npm package-page PowerShell installer command with
+  the shorter `irm ... | iex` form.
+- Kept the inspectable temp-file PowerShell installer form in the detailed
+  install guide for optional installer arguments.
+
 ## [0.1.2] - 2026-06-13
 
 ### Changed

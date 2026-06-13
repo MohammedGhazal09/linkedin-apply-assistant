@@ -1,6 +1,6 @@
 """Package identity for the standalone LinkedIn application assistant."""
 
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 
 APP_DISPLAY_NAME = "LinkedIn-apply-assistant"
 APP_PACKAGE_NAME = "linkedin-apply-assistant"
