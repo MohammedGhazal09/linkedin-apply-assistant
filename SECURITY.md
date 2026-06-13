@@ -34,4 +34,4 @@ Never attach browser profiles, cookies, credentials, screenshots, private docume
 
 ## Supported Versions
 
-The initial standalone GitHub source release is `0.1.0`. Current package metadata is `0.1.1`. Security guidance applies to the current unreleased, `0.1.1`, and `0.1.0` package-local surfaces.
+The initial standalone GitHub source release is `0.1.0`. Current package metadata is `0.1.2`. Security guidance applies to the current unreleased, `0.1.2`, `0.1.1`, and `0.1.0` package-local surfaces.

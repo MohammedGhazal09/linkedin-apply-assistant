@@ -7,7 +7,7 @@ LinkedIn-apply-assistant is an experimental local browser automation assistant f
 
 The package is local-first. It does not require credentials in config, copied browser profiles, private documents, or generated reports to import, inspect, or run its deterministic tests.
 
-Current package metadata version: `0.1.1`.
+Current package metadata version: `0.1.2`.
 
 ## Safety Boundary
 
@@ -28,56 +28,30 @@ Read [SAFETY.md](SAFETY.md) before using visible-browser workflows. Read [LEGAL.
 
 ## Install
 
-NPM global launcher:
-
-```powershell
-npm install -g linkedin-apply-assistant
-linkedin-apply-assistant --help
-```
-
-The npm package is a Node launcher plus bundled Python source. If the launcher
-reports missing Python imports, install the bundled Python package from the
-global npm package directory:
-
-```powershell
-$pkg = Join-Path (npm root -g) 'linkedin-apply-assistant'
-py -3 -m pip install $pkg
-```
-
-PowerShell no-admin installer:
-
-```powershell
-$script = Join-Path $env:TEMP 'install-linkedin-apply-assistant.ps1'
-Invoke-WebRequest -UseBasicParsing https://raw.githubusercontent.com/MohammedGhazal09/linkedin-apply-assistant/main/install.ps1 -OutFile $script
-powershell -ExecutionPolicy Bypass -File $script
-```
-
-From the package directory:
-
-```powershell
-python -m pip install -e ".[dev]"
-linkedin-apply-assistant --help
-```
-
-For Bash/macOS/Linux:
+NPM:
 
 ```bash
-python -m pip install -e ".[dev]"
+npm install -g linkedin-apply-assistant
+```
+
+Windows PowerShell:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -Command "iwr https://raw.githubusercontent.com/MohammedGhazal09/linkedin-apply-assistant/main/install.ps1 -OutFile $env:TEMP\linkedin-apply-assistant-install.ps1; & $env:TEMP\linkedin-apply-assistant-install.ps1"
+```
+
+Verify:
+
+```powershell
 linkedin-apply-assistant --help
 ```
 
-For editable local development, this module fallback is available from the package root:
-
-```powershell
-$env:PYTHONPATH=(Resolve-Path 'src').Path
-python -m linkedin_apply_assistant.cli --help
-```
-
-Use Python 3.11 or newer. Install Playwright Chromium before visible-browser workflows such as `search`, `assist`, or browser-dependent `apply` preparation. Browser-free `dry-run` and `report` do not require Chromium.
-
-The package also includes a local npm launcher shape for package dry-run validation. It delegates to the Python CLI and still requires Python 3.11+ and the package dependencies to be installed or importable.
-
-Source checkout is available at <https://github.com/MohammedGhazal09/linkedin-apply-assistant>. See [docs/install-and-configuration.md](docs/install-and-configuration.md) for the full npm, PowerShell, source, Python, and Playwright install matrix. PyPI remains a future package channel; the package-channel decision is documented in the [registry publication strategy](docs/registry-publication-strategy.md).
+Use Python 3.11 or newer. The npm package is the current public registry path;
+the PowerShell command downloads the installer from GitHub and runs it locally.
+See [docs/install-and-configuration.md](docs/install-and-configuration.md) for
+source, Python, Playwright, and troubleshooting details. PyPI remains a future
+package channel; the package-channel decision is documented in the
+[registry publication strategy](docs/registry-publication-strategy.md).
 
 ## Quick Start
 

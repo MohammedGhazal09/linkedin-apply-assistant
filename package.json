@@ -1,6 +1,6 @@
 {
   "name": "linkedin-apply-assistant",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Thin npm launcher for the Python LinkedIn apply assistant package",
   "license": "MIT",
   "repository": {

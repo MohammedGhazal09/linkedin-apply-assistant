@@ -147,6 +147,8 @@ def test_install_docs_cover_source_python_and_playwright_paths() -> None:
         "npm install -g linkedin-apply-assistant",
         "powershell installer",
         "install.ps1",
+        "powershell -noprofile -executionpolicy bypass -command",
+        "raw.githubusercontent.com/mohammedghazal09/linkedin-apply-assistant/main/install.ps1",
         "py -3 -m pip install $pkg",
         "python -m linkedin_apply_assistant.cli --help",
         "npm pack --dry-run --json",
@@ -302,13 +304,19 @@ def test_readme_points_to_canonical_install_matrix_without_duplicating_it() -> N
     assert "docs/install-and-configuration.md" in text
     assert "python 3.11" in lower_text
     assert "linkedin-apply-assistant --help" in text
-    assert "python -m linkedin_apply_assistant.cli --help" in text
-    assert "npm, powershell, source, python, and playwright install matrix" in lower_text
+    assert (
+        "raw.githubusercontent.com/MohammedGhazal09/linkedin-apply-assistant/main/install.ps1"
+        in text
+    )
+    assert "source, Python, Playwright, and troubleshooting details" in text
     assert "no-submit" in lower_text
 
-    # README is a quick start; the exhaustive install matrix belongs in docs/.
+    # README is a quick start; detailed install paths belong in docs/.
     assert lower_text.count("pipx install") == 0
     assert lower_text.count("npm install -g") == 1
+    assert "py -3 -m pip install $pkg" not in lower_text
+    assert 'python -m pip install -e ".[dev]"' not in lower_text
+    assert "python -m linkedin_apply_assistant.cli --help" not in lower_text
 
 
 def test_install_docs_avoid_live_availability_claims_before_ship_approval() -> None:

@@ -344,6 +344,30 @@ def test_release_checklist_documents_v011_npm_and_powershell_release() -> None:
         assert phrase in checklist
 
 
+def test_release_checklist_documents_v012_install_docs_patch_release() -> None:
+    checklist = _checklist_text()
+
+    for phrase in (
+        "v0.1.2 install documentation simplification release",
+        "one npm command",
+        "one direct powershell installer command",
+        "package version: `0.1.2`",
+        "github release: `v0.1.2`",
+        "runtime behavior, browser safety posture, and public cli contract are unchanged",
+        "tests\\test_distribution_metadata.py tests\\test_docs_smoke.py",
+        "npm pack --dry-run --json",
+        "npm view linkedin-apply-assistant version --json",
+        "npm view linkedin-apply-assistant dist-tags --json",
+        "gh release view v0.1.2",
+        "docs-only package refresh",
+        "immutable npm readme",
+        "no lifecycle install, publish, or token scripts",
+        "avoid `invoke-expression`",
+        "pypi and testpypi uploads stay out of this release",
+    ):
+        assert phrase in checklist
+
+
 def test_release_checklist_does_not_script_broad_tag_or_registry_publish() -> None:
     commands = _checklist_command_blocks()
 

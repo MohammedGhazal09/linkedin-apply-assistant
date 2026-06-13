@@ -6,6 +6,15 @@ This file follows the spirit of Keep a Changelog and uses semantic version label
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-06-13
+
+### Changed
+
+- Simplified README and npm package-page install instructions to one npm
+  command plus one direct PowerShell installer command.
+- Kept extended Python, Playwright, source checkout, and troubleshooting details
+  in the canonical install guide instead of duplicating them in the README.
+
 ## [0.1.1] - 2026-06-13
 
 ### Added

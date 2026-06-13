@@ -4,12 +4,31 @@ This package runs locally. You install the Python package, choose a local worksp
 
 This file is the canonical install matrix. The README keeps only a short quick start.
 
-Current package metadata version: `0.1.1`.
+Current package metadata version: `0.1.2`.
 
-The npm launcher and PowerShell installer are the current quick-install paths.
+The npm launcher and PowerShell no-admin installer are the current quick-install paths.
 PyPI remains a future package channel. The package-channel decision, approval
 gates, and `v0.1.0` no-backfill policy are documented in the
 [registry publication strategy](registry-publication-strategy.md).
+
+## Fast Install
+
+NPM:
+
+```bash
+npm install -g linkedin-apply-assistant
+linkedin-apply-assistant --help
+```
+
+Windows PowerShell without npm:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -Command "iwr https://raw.githubusercontent.com/MohammedGhazal09/linkedin-apply-assistant/main/install.ps1 -OutFile $env:TEMP\linkedin-apply-assistant-install.ps1; & $env:TEMP\linkedin-apply-assistant-install.ps1"
+```
+
+The PowerShell command downloads [install.ps1](../install.ps1) from GitHub raw
+content to your temporary directory, then runs that local file. It does not use
+an `Invoke-Expression` pipe-install pattern.
 
 ## Prerequisites
 
@@ -53,15 +72,13 @@ local virtual environment, installs the Python package, and writes
 does not require admin rights.
 
 ```powershell
-$script = Join-Path $env:TEMP 'install-linkedin-apply-assistant.ps1'
-Invoke-WebRequest -UseBasicParsing https://raw.githubusercontent.com/MohammedGhazal09/linkedin-apply-assistant/main/install.ps1 -OutFile $script
-powershell -ExecutionPolicy Bypass -File $script
+powershell -NoProfile -ExecutionPolicy Bypass -Command "iwr https://raw.githubusercontent.com/MohammedGhazal09/linkedin-apply-assistant/main/install.ps1 -OutFile $env:TEMP\linkedin-apply-assistant-install.ps1; & $env:TEMP\linkedin-apply-assistant-install.ps1"
 ```
 
 Optional visible-browser setup during install:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File $script -InstallBrowser
+powershell -NoProfile -ExecutionPolicy Bypass -Command "iwr https://raw.githubusercontent.com/MohammedGhazal09/linkedin-apply-assistant/main/install.ps1 -OutFile $env:TEMP\linkedin-apply-assistant-install.ps1; & $env:TEMP\linkedin-apply-assistant-install.ps1 -InstallBrowser"
 ```
 
 ## Current Source Checkout
