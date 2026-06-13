@@ -170,6 +170,19 @@ def test_quality_workflow_runtime_and_release_smoke_contract() -> None:
     assert "npm ci" not in text
     assert 'node-version: "24"' in text
 
+    release_steps = jobs["release-smoke"]["steps"]
+    release_step_names = [str(step.get("name", "")) for step in release_steps]
+    assert (
+        release_step_names.index("Run focused release tests")
+        < release_step_names.index("Clean generated release blockers after release tests")
+        < release_step_names.index("Validate release manifest")
+        < release_step_names.index("Verify release candidate shape")
+    )
+    post_test_clean = release_steps[
+        release_step_names.index("Clean generated release blockers after release tests")
+    ]
+    assert post_test_clean["run"] == "python scripts/release.py clean"
+
     action_text = "\n".join(str(step.get("uses", "")) for step in _all_steps(config))
     assert re.search(r"actions/checkout@v6(?:\.|$)", action_text)
     assert re.search(r"actions/setup-python@v6(?:\.|$)", action_text)

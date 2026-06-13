@@ -67,7 +67,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -e ".[dev]"
 
-      - name: Clean generated release blockers
+      - name: Clean generated release blockers before release tests
         run: python scripts/release.py clean
 
       - name: Run focused release tests
@@ -79,6 +79,9 @@ jobs:
           tests/test_docs_smoke.py
           tests/test_workflow_safety.py
           -q
+
+      - name: Clean generated release blockers after release tests
+        run: python scripts/release.py clean
 
       - name: Validate release manifest
         run: python scripts/release.py manifest --check
