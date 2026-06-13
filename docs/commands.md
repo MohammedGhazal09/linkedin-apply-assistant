@@ -11,6 +11,9 @@ Use this page after installation to choose the right terminal command, inspect f
    linkedin-apply-assistant config check
    ```
 
+   `linkedin-apply-assistant config` is accepted as the same read-only
+   diagnostic shortcut.
+
 3. Copy example files into your own ignored workspace when you need them:
    - `configs/config.example.yml` for profile, documents, and path choices.
    - `configs/qa_bank.example.yml` for truthful reusable answers.
@@ -54,6 +57,12 @@ Run diagnostics before browser workflows or after changing path flags:
 
 ```powershell
 linkedin-apply-assistant config check
+```
+
+Shortcut:
+
+```powershell
+linkedin-apply-assistant config
 ```
 
 Expected output:

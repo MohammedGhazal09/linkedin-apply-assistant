@@ -78,6 +78,25 @@ def test_config_check_reports_paths_without_creating_files(tmp_path: Path) -> No
         assert not path.exists(), f"config check created {path}"
 
 
+def test_config_shorthand_defaults_to_check_without_creating_files(tmp_path: Path) -> None:
+    result = _run_cli("--verbose", "config", "--workspace", str(tmp_path))
+    output = result.stdout.lower()
+
+    assert result.returncode == 0, result.stderr
+    assert "config diagnostics" in output
+    assert "no files or directories were created" in output
+    assert "the following arguments are required" not in result.stderr
+
+    for path in (
+        tmp_path / "configs",
+        tmp_path / "data",
+        tmp_path / ".cache",
+        tmp_path / "browser-profile",
+        tmp_path / "output",
+    ):
+        assert not path.exists(), f"config shorthand created {path}"
+
+
 def test_browser_free_commands_work_without_config_or_browser_setup(tmp_path: Path) -> None:
     dry_run = _run_cli(
         "dry-run", "--input", str(PACKAGE_ROOT / "examples" / "dry_run_input.example.json")

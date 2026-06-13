@@ -4,7 +4,7 @@ This package runs locally. You install the Python package, choose a local worksp
 
 This file is the canonical install matrix. The README keeps only a short quick start.
 
-Current package metadata version: `0.1.3`.
+Current package metadata version: `0.1.4`.
 
 The npm launcher and PowerShell no-admin installer are the current quick-install paths.
 PyPI remains a future package channel. The package-channel decision, approval

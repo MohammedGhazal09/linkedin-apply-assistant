@@ -7,7 +7,7 @@ LinkedIn-apply-assistant is an experimental local browser automation assistant f
 
 The package is local-first. It does not require credentials in config, copied browser profiles, private documents, or generated reports to import, inspect, or run its deterministic tests.
 
-Current package metadata version: `0.1.3`.
+Current package metadata version: `0.1.4`.
 
 ## Safety Boundary
 

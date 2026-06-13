@@ -66,7 +66,7 @@ def test_package_json_keeps_npm_contents_explicit_and_honest() -> None:
     assert set(files) == {
         "bin/linkedin-apply-assistant.mjs",
         "pyproject.toml",
-        "src/",
+        "src/linkedin_apply_assistant/*.py",
         "install.ps1",
         "README.md",
         "SAFETY.md",

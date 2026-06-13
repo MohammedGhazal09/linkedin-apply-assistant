@@ -392,6 +392,27 @@ def test_release_checklist_documents_v013_short_powershell_release() -> None:
         assert phrase in checklist
 
 
+def test_release_checklist_documents_v014_cli_missing_command_ux_release() -> None:
+    checklist = _checklist_text()
+
+    for phrase in (
+        "v0.1.4 cli missing-command ux release",
+        "package version: `0.1.4`",
+        "github release: `v0.1.4`",
+        "runtime behavior, browser safety posture, and public apply/search boundaries are unchanged",
+        "linkedin-apply-assistant --verbose",
+        "linkedin-apply-assistant --verbose config",
+        "prints root help and a first-run hint",
+        "runs the same read-only diagnostics as",
+        "tests\\test_cli_help.py tests\\test_config_diagnostics.py",
+        "npm view linkedin-apply-assistant version --json",
+        "gh release view v0.1.4",
+        "config` shorthand remains read-only",
+        "pypi and testpypi uploads stay out of this release",
+    ):
+        assert phrase in checklist
+
+
 def test_release_checklist_does_not_script_broad_tag_or_registry_publish() -> None:
     commands = _checklist_command_blocks()
 

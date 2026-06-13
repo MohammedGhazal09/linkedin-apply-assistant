@@ -108,7 +108,7 @@ Outputs use the resolved output directory and reports are written under its repo
 {NO_SUBMIT_HELP}
 """,
     )
-    subparsers = parser.add_subparsers(dest="command", required=True)
+    subparsers = parser.add_subparsers(dest="command")
 
     config = subparsers.add_parser(
         "config",
@@ -124,7 +124,7 @@ The diagnostic resolves config, Q&A bank, browser profile, output, reports, data
 It creates no files and no directories.
 """,
     )
-    config_subparsers = config.add_subparsers(dest="config_command", required=True)
+    config_subparsers = config.add_subparsers(dest="config_command")
     config_check = config_subparsers.add_parser(
         "check",
         parents=[subcommand_common],
@@ -558,6 +558,14 @@ def _handle_report(args: argparse.Namespace) -> int:
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
+    if args.command is None:
+        parser.print_help()
+        print()
+        print(f"Try: {CONFIG_CHECK_COMMAND}")
+        return 0
+    if args.command == "config" and args.config_command is None:
+        args.config_command = "check"
+        args.handler = _handle_config_check
     handler = getattr(args, "handler")
     try:
         return int(handler(args))

@@ -6,6 +6,16 @@ This file follows the spirit of Keep a Changelog and uses semantic version label
 
 ## [Unreleased]
 
+## [0.1.4] - 2026-06-13
+
+### Fixed
+
+- Made `linkedin-apply-assistant --verbose` print root help and a first-run hint
+  instead of failing with a missing `command` parser error.
+- Made `linkedin-apply-assistant config` default to the read-only
+  `config check` diagnostics command instead of failing with a missing
+  `config_command` parser error.
+
 ## [0.1.3] - 2026-06-13
 
 ### Changed

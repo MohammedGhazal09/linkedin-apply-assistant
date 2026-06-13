@@ -443,6 +443,50 @@ Distribution safety boundary:
   download and run that public script
 - PyPI and TestPyPI uploads stay out of this release
 
+## v0.1.4 CLI Missing-Command UX Release
+
+This patch fixes first-run command-line behavior so missing subcommands produce
+actionable output instead of raw argparse parser errors.
+
+Scope:
+
+- Package version: `0.1.4`
+- npm package: `linkedin-apply-assistant`
+- npm dist-tag: `latest`
+- GitHub Release: `v0.1.4`
+- Repository: `MohammedGhazal09/linkedin-apply-assistant`
+- Runtime behavior, browser safety posture, and public apply/search boundaries are unchanged.
+- `linkedin-apply-assistant --verbose` prints root help and a first-run hint.
+- `linkedin-apply-assistant config` runs the same read-only diagnostics as
+  `linkedin-apply-assistant config check`.
+- PyPI and TestPyPI remain future channels.
+
+Required local evidence before public sync:
+
+```powershell
+python -m pytest tests\test_cli_help.py tests\test_config_diagnostics.py tests\test_distribution_metadata.py tests\test_docs_smoke.py tests\test_registry_publication_strategy.py tests\test_release_readiness.py tests\test_npm_launcher.py tests\test_distribution_smoke.py tests\test_release_manifest.py -q
+python scripts\release.py clean
+python scripts\release.py manifest --check
+python scripts\release.py verify
+npm pack --dry-run --json
+```
+
+Post-publish verification:
+
+```powershell
+npm view linkedin-apply-assistant version --json
+npm view linkedin-apply-assistant dist-tags --json
+linkedin-apply-assistant --verbose
+linkedin-apply-assistant --verbose config
+gh release view v0.1.4 --repo MohammedGhazal09/linkedin-apply-assistant --json tagName,name,url,isDraft,isPrerelease,targetCommitish
+```
+
+Distribution safety boundary:
+
+- no lifecycle install, publish, or token scripts are added to `package.json`
+- `config` shorthand remains read-only and creates no files or directories
+- PyPI and TestPyPI uploads stay out of this release
+
 ## Required Public Metadata
 
 `package.json` must include exactly these public project fields:
@@ -496,7 +540,7 @@ Do not publish while any hard blocker remains unresolved.
 - `LEGAL.md` and `SAFETY.md` remain linked from README.
 - `MIGRATION.md` explains extraction scope and excluded root surfaces.
 - `CONTRIBUTING.md` and `SECURITY.md` are standalone-scoped.
-- Changelog has `Unreleased`, `0.1.3`, `0.1.2`, `0.1.1`, and `0.1.0`.
+- Changelog has `Unreleased`, `0.1.4`, `0.1.3`, `0.1.2`, `0.1.1`, and `0.1.0`.
 - Source, Python, npm launcher, and PowerShell installer docs are current and tested.
 - Phase 21 terminal UX docs and help stay current: `docs\commands.md`, `tests\test_cli_help.py`, and `tests\test_config_diagnostics.py`.
 - Public package metadata points to the canonical GitHub repository and issue tracker.

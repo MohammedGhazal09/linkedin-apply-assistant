@@ -55,6 +55,15 @@ def test_root_help_includes_first_run_safety_and_outputs() -> None:
         assert phrase in lower_text
 
 
+def test_root_without_command_prints_help_and_first_run_hint() -> None:
+    result = _run_cli("--verbose")
+
+    assert result.returncode == 0, result.stderr
+    assert "usage:" in result.stdout
+    assert "Try: linkedin-apply-assistant config check" in result.stdout
+    assert "the following arguments are required" not in result.stderr
+
+
 def test_config_help_describes_read_only_diagnostics() -> None:
     config_help = _assert_help("config")
     check_help = _assert_help("config", "check")
