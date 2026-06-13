@@ -1,5 +1,8 @@
 # LinkedIn-apply-assistant
 
+[![Quality](https://github.com/MohammedGhazal09/linkedin-apply-assistant/actions/workflows/quality.yml/badge.svg?branch=main)](https://github.com/MohammedGhazal09/linkedin-apply-assistant/actions/workflows/quality.yml?query=branch%3Amain)
+[![Security](https://github.com/MohammedGhazal09/linkedin-apply-assistant/actions/workflows/security.yml/badge.svg?branch=main)](https://github.com/MohammedGhazal09/linkedin-apply-assistant/actions/workflows/security.yml?query=branch%3Amain)
+
 LinkedIn-apply-assistant is an experimental local browser automation assistant for LinkedIn job workflows. It helps with search, visible-browser form filling, prepare-only apply audits, dry-run validation, and local report review while you stay in control of every browser session.
 
 The package is local-first. It does not require credentials in config, copied browser profiles, private documents, or generated reports to import, inspect, or run its deterministic tests.
@@ -50,7 +53,7 @@ Use Python 3.11 or newer. Install Playwright Chromium before visible-browser wor
 
 The package also includes a local npm launcher shape for package dry-run validation. It delegates to the Python CLI and still requires the Python package to be installed or importable.
 
-Source checkout is available at <https://github.com/MohammedGhazal09/linkedin-apply-assistant>. See [docs/install-and-configuration.md](docs/install-and-configuration.md) for the full source, Python, npm launcher, and Playwright install matrix. This package is still local-first; npm and PyPI registry releases remain pending until a later approved publish phase.
+Source checkout is available at <https://github.com/MohammedGhazal09/linkedin-apply-assistant>. See [docs/install-and-configuration.md](docs/install-and-configuration.md) for the full source, Python, npm launcher, and Playwright install matrix. This package is still local-first; npm and PyPI registry releases remain pending until a later approved publish phase. The package-channel decision is documented in the [registry publication strategy](docs/registry-publication-strategy.md).
 
 ## Quick Start
 
@@ -125,6 +128,8 @@ Release and maintainer docs:
 - [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
 - [.github/ISSUE_TEMPLATE/](.github/ISSUE_TEMPLATE/)
 - [.github/PULL_REQUEST_TEMPLATE.md](.github/PULL_REQUEST_TEMPLATE.md)
+- [CI and release policy](docs/ci-and-release-policy.md)
+- [Registry publication strategy](docs/registry-publication-strategy.md)
 - [CHANGELOG.md](CHANGELOG.md)
 - [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md)
 

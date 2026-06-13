@@ -88,6 +88,7 @@ def test_npm_pack_dry_run_reports_expected_public_files() -> None:
         ".github/PULL_REQUEST_TEMPLATE.md",
         "RELEASE_CHECKLIST.md",
         "docs/install-and-configuration.md",
+        "docs/registry-publication-strategy.md",
         "docs/browser-session.md",
         "docs/search.md",
         "docs/assist.md",

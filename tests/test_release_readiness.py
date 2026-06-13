@@ -237,6 +237,86 @@ def test_release_checklist_documents_phase26_community_health_gates() -> None:
         assert phrase in checklist
 
 
+def test_release_checklist_documents_phase28_ci_visibility_gates() -> None:
+    checklist = _checklist_text()
+
+    for phrase in (
+        "phase 28 release automation, provenance, and ci visibility",
+        ".github/workflows/quality.yml",
+        ".github/workflows/security.yml",
+        ".github/dependabot.yml",
+        "docs/ci-and-release-policy.md",
+        "tests/test_workflow_safety.py",
+        "python -m pytest tests\\test_workflow_safety.py",
+        "python scripts\\quality.py",
+        "python scripts\\release.py manifest --check",
+        "python scripts\\release.py verify",
+        "npm pack --dry-run --json",
+        "gitleaks dir . --no-banner --redact",
+        "quality",
+        "security",
+        "python `3.11` and `3.12`",
+        "node.js `24`",
+        "committed codeql advanced setup",
+        "fail-on-severity: high",
+        "weekly grouped",
+        "open pr limit 5",
+        "contents: read",
+        "security-events: write",
+        "packages: write",
+        "id-token: write",
+        "attestations: write",
+        "release please",
+        "semantic-release",
+        "conventional commits",
+        "source-release manifest metadata",
+        "excluded from npm package contents",
+    ):
+        assert phrase in checklist
+
+
+def test_release_checklist_documents_phase29_registry_strategy_gates() -> None:
+    checklist = _checklist_text()
+
+    for phrase in (
+        "phase 29 registry publication strategy",
+        "docs/registry-publication-strategy.md",
+        "github releases are the current source-only public channel",
+        "`v0.1.0` remains github-source-only",
+        "pypi is the primary future package registry",
+        "testpypi is required for the first registry release",
+        "npm is a secondary future thin-launcher channel",
+        "github packages remains deferred",
+        "python -m pytest tests\\test_registry_publication_strategy.py",
+        "python scripts\\release.py manifest --check",
+        "python scripts\\release.py verify",
+        "npm pack --dry-run --json",
+        "npm view linkedin-apply-assistant version --json",
+        "https://pypi.org/pypi/linkedin-apply-assistant/json",
+        "https://test.pypi.org/pypi/linkedin-apply-assistant/json",
+        "gh release list --repo mohammedghazal09/linkedin-apply-assistant",
+        "repository",
+        "version",
+        "channel",
+        "workflow or manual action owner",
+        "exact mutation",
+        "python -m build",
+        "twine check dist/*",
+        "local wheel install smoke",
+        "package contents inspection",
+        "gitleaks or release scan",
+        "pypi trusted publishing",
+        "github actions oidc",
+        "npm trusted publishing",
+        "no shared long-lived registry tokens",
+        "protected environments such as `testpypi`, `pypi`, and `npm`",
+        "future `release.yml` identity only after explicit approval",
+        "no `packages: write`, `id-token: write`, or `attestations: write` in phase 29",
+        "no executable registry rollback script",
+    ):
+        assert phrase in checklist
+
+
 def test_release_checklist_does_not_script_broad_tag_or_registry_publish() -> None:
     commands = _checklist_command_blocks()
 

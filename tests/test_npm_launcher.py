@@ -85,6 +85,8 @@ def test_package_json_keeps_npm_contents_explicit_and_honest() -> None:
         ".github/PULL_REQUEST_TEMPLATE.md",
         "RELEASE_CHECKLIST.md",
         "docs/commands.md",
+        "docs/ci-and-release-policy.md",
+        "docs/registry-publication-strategy.md",
         "docs/install-and-configuration.md",
         "docs/browser-session.md",
         "docs/search.md",

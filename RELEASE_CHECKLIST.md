@@ -126,6 +126,156 @@ Community-health release gate:
 - local public-checkout sync only; no live community-profile improvement is
   claimed until a later approved push publishes the files
 
+## Phase 28 Release Automation, Provenance, and CI Visibility
+
+Phase 28 adds CI visibility and release-policy documentation. It does not
+publish packages, create or mutate tags, create or mutate GitHub Releases,
+reserve package names, configure trusted publishers, enable artifact
+attestations, create SBOM artifacts, add signing keys, or mutate branch rulesets,
+tag rulesets, required checks, labels, assignees, or repository settings.
+
+Required files:
+
+- `.github/workflows/quality.yml`
+- `.github/workflows/security.yml`
+- `.github/dependabot.yml`
+- `docs/ci-and-release-policy.md`
+- `tests/test_workflow_safety.py`
+
+Required Phase 28 local evidence:
+
+```powershell
+python -m pytest tests\test_workflow_safety.py tests\test_docs_smoke.py tests\test_distribution_metadata.py tests\test_release_manifest.py tests\test_release_readiness.py tests\test_quality_gate.py -q
+python scripts\quality.py
+python scripts\release.py clean
+python scripts\release.py manifest --check
+python scripts\release.py verify
+npm pack --dry-run --json
+gitleaks version
+gitleaks dir . --no-banner --redact
+```
+
+Required Phase 28 public verification after explicit sync approval:
+
+```powershell
+gh api repos/MohammedGhazal09/linkedin-apply-assistant/actions/workflows --jq ".workflows[] | {name,path,state,id}"
+gh workflow list --repo MohammedGhazal09/linkedin-apply-assistant
+gh run list --repo MohammedGhazal09/linkedin-apply-assistant --limit 10
+gh api repos/MohammedGhazal09/linkedin-apply-assistant/dependabot/alerts --paginate --jq "length"
+gh release list --repo MohammedGhazal09/linkedin-apply-assistant --limit 10
+git ls-remote --tags origin
+```
+
+CI and release-policy gate:
+
+- only two user-authored workflow badges are added: `Quality` and `Security`
+- badge URLs point at the `main` branch and the user-authored workflow files
+- `Quality` runs Python `3.11` and `3.12` on Ubuntu and a single Node.js `24`
+  release-smoke lane
+- `Security` runs committed CodeQL advanced setup for Python and JavaScript,
+  Dependency Review with `fail-on-severity: high`, and Gitleaks secret scanning
+- Dependabot covers GitHub Actions, npm, and pip at `/` with weekly grouped
+  updates, open PR limit 5, no auto-merge, and no labels or assignees
+- workflow permissions default to `contents: read`
+- `security-events: write` is allowed only for the CodeQL job
+- no `packages: write`, `id-token: write`, or `attestations: write`
+- no Release Please, semantic-release, or equivalent tag/release automation
+- Conventional Commits are advisory documentation only and are not enforced in CI
+- workflows and Dependabot config are source-release manifest metadata, but are
+  excluded from npm package contents unless a future phase intentionally changes
+  that policy
+
+## Phase 29 Registry Publication Strategy
+
+Phase 29 documents the package-channel decision and static registry policy. It
+does not publish packages, reserve package names, create registry projects,
+configure trusted publishers, create registry tokens, log in to registries,
+create or mutate tags, create or mutate GitHub Releases, upload release assets,
+grant publish-capable workflow permissions, or apply a career-ops system update.
+
+Canonical strategy doc:
+
+- `docs/registry-publication-strategy.md`
+
+Channel decision:
+
+- GitHub Releases are the current source-only public channel.
+- `v0.1.0` remains GitHub-source-only and is not a registry backfill candidate.
+- PyPI is the primary future package registry.
+- TestPyPI is required for the first registry release and publish-workflow
+  changes.
+- npm is a secondary future thin-launcher channel that delegates to the Python
+  CLI.
+- GitHub Packages remains deferred.
+
+Required Phase 29 local evidence:
+
+```powershell
+python -m pytest tests\test_registry_publication_strategy.py tests\test_docs_smoke.py tests\test_distribution_metadata.py tests\test_release_readiness.py tests\test_release_manifest.py tests\test_npm_launcher.py tests\test_distribution_smoke.py tests\test_workflow_safety.py -q
+python scripts\quality.py
+python scripts\release.py clean
+python scripts\release.py manifest --check
+python scripts\release.py verify
+npm pack --dry-run --json
+```
+
+Required Phase 29 read-only absence checks:
+
+```powershell
+npm view linkedin-apply-assistant version --json
+try { (Invoke-WebRequest -UseBasicParsing https://pypi.org/pypi/linkedin-apply-assistant/json -TimeoutSec 20).StatusCode } catch { $_.Exception.Response.StatusCode.value__ }
+try { (Invoke-WebRequest -UseBasicParsing https://test.pypi.org/pypi/linkedin-apply-assistant/json -TimeoutSec 20).StatusCode } catch { $_.Exception.Response.StatusCode.value__ }
+gh release list --repo MohammedGhazal09/linkedin-apply-assistant --limit 5
+gh workflow list --repo MohammedGhazal09/linkedin-apply-assistant
+```
+
+Future registry approval must name:
+
+- repository
+- version
+- channel
+- workflow or manual action owner
+- exact mutation
+
+Future gate categories:
+
+- Python build with `python -m build`
+- Python metadata validation with `twine check dist/*`
+- local wheel install smoke
+- npm dry-run with `npm pack --dry-run --json`
+- package contents inspection
+- manifest verification with `python scripts\release.py manifest --check`
+- release verification with `python scripts\release.py verify`
+- gitleaks or release scan
+- read-only npm, PyPI, and TestPyPI registry checks
+
+Future registry security boundary:
+
+- maintainer or maintainer-controlled organization ownership
+- account 2FA where supported
+- PyPI Trusted Publishing with GitHub Actions OIDC
+- npm trusted publishing or OIDC where supported
+- protected environments such as `testpypi`, `pypi`, and `npm`
+- no shared long-lived registry tokens
+- future `release.yml` identity only after explicit approval
+- no `packages: write`, `id-token: write`, or `attestations: write` in Phase 29
+
+Future approval templates are in `docs/registry-publication-strategy.md` for:
+
+- TestPyPI preflight
+- PyPI release
+- npm launcher release
+- GitHub Release asset work
+
+Rollback and remediation policy:
+
+- PyPI: prefer yanking where appropriate; deletion is disruptive.
+- TestPyPI: cleanup is preflight-only and not production rollback proof.
+- npm: deprecation is often safer than unpublish, and used package versions
+  cannot be reused.
+- GitHub Releases: asset removal does not undo source archives or tags.
+- no executable registry rollback script is part of Phase 29.
+
 ## Required Public Metadata
 
 `package.json` must include exactly these public project fields:

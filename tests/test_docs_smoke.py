@@ -16,6 +16,8 @@ README = PACKAGE_ROOT / "README.md"
 SAFETY = PACKAGE_ROOT / "SAFETY.md"
 INSTALL_DOC = PACKAGE_ROOT / "docs" / "install-and-configuration.md"
 COMMANDS_DOC = PACKAGE_ROOT / "docs" / "commands.md"
+CI_POLICY_DOC = PACKAGE_ROOT / "docs" / "ci-and-release-policy.md"
+REGISTRY_STRATEGY_DOC = PACKAGE_ROOT / "docs" / "registry-publication-strategy.md"
 REQUIRED_DOCS = (
     "README.md",
     "SAFETY.md",
@@ -33,6 +35,8 @@ REQUIRED_DOCS = (
     "RELEASE_CHECKLIST.md",
     "docs/install-and-configuration.md",
     "docs/commands.md",
+    "docs/ci-and-release-policy.md",
+    "docs/registry-publication-strategy.md",
     "docs/browser-session.md",
     "docs/search.md",
     "docs/assist.md",
@@ -206,6 +210,73 @@ def test_readme_and_contributing_link_community_health_files() -> None:
         ".github/PULL_REQUEST_TEMPLATE.md",
     ):
         assert relative_path in combined
+
+
+def test_readme_links_ci_policy_and_workflow_badges() -> None:
+    readme = _read(README)
+
+    for phrase in (
+        "actions/workflows/quality.yml/badge.svg?branch=main",
+        "actions/workflows/security.yml/badge.svg?branch=main",
+        "actions/workflows/quality.yml?query=branch%3Amain",
+        "actions/workflows/security.yml?query=branch%3Amain",
+        "docs/ci-and-release-policy.md",
+    ):
+        assert phrase in readme
+
+
+def test_ci_policy_documents_active_and_deferred_controls() -> None:
+    text = _read(CI_POLICY_DOC).lower()
+
+    for phrase in (
+        "quality",
+        "security",
+        ".github/workflows/quality.yml",
+        ".github/workflows/security.yml",
+        "python `3.11` and `3.12`",
+        "node.js `24`",
+        'python -m pip install -e ".[dev]"',
+        "npm pack --dry-run --json",
+        "codeql",
+        "dependency-review",
+        "fail-on-severity: high",
+        "gitleaks",
+        "contents: read",
+        "security-events: write",
+        "sbom generation",
+        "artifact attestations",
+        "id-token: write",
+        "attestations: write",
+        "packages: write",
+        "release please",
+        "semantic-release",
+        "conventional commits",
+        "no-surprise publish boundary",
+        "registry-publication-strategy.md",
+    ):
+        assert phrase in text
+
+    for phrase in (
+        "npm publish",
+        "twine upload",
+        "create or push tags",
+        "mutate branch rulesets",
+    ):
+        assert phrase in text
+
+
+def test_registry_publication_strategy_is_part_of_public_docs() -> None:
+    text = _read(REGISTRY_STRATEGY_DOC).lower()
+    readme = _read(README)
+    install_doc = _read(INSTALL_DOC)
+
+    assert "registry publication strategy" in text
+    assert "docs/registry-publication-strategy.md" in readme
+    assert "registry-publication-strategy.md" in install_doc
+    assert "github releases" in text
+    assert "pypi" in text
+    assert "testpypi" in text
+    assert "npm" in text
 
 
 def test_command_reference_keeps_browser_free_commands_browser_free() -> None:

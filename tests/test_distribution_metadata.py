@@ -14,6 +14,7 @@ CHANGELOG = PACKAGE_ROOT / "CHANGELOG.md"
 RELEASE_CHECKLIST = PACKAGE_ROOT / "RELEASE_CHECKLIST.md"
 README = PACKAGE_ROOT / "README.md"
 INSTALL_DOC = PACKAGE_ROOT / "docs" / "install-and-configuration.md"
+REGISTRY_STRATEGY_DOC = PACKAGE_ROOT / "docs" / "registry-publication-strategy.md"
 PUBLIC_REPO = "https://github.com/MohammedGhazal09/linkedin-apply-assistant"
 NPM_REPOSITORY = f"git+{PUBLIC_REPO}.git"
 HOMEPAGE = f"{PUBLIC_REPO}#readme"
@@ -75,6 +76,7 @@ def test_distribution_docs_and_release_surfaces_include_identity() -> None:
     docs = {
         "README.md": README.read_text(encoding="utf-8"),
         "docs/install-and-configuration.md": INSTALL_DOC.read_text(encoding="utf-8"),
+        "docs/registry-publication-strategy.md": REGISTRY_STRATEGY_DOC.read_text(encoding="utf-8"),
         "CHANGELOG.md": CHANGELOG.read_text(encoding="utf-8"),
         "RELEASE_CHECKLIST.md": RELEASE_CHECKLIST.read_text(encoding="utf-8"),
     }
@@ -103,6 +105,8 @@ def test_public_source_and_pending_registry_wording_is_labeled() -> None:
     assert "does not claim a live public repository" not in readme
     assert "after a later approved npm registry release" in install_doc
     assert "until that release exists" in install_doc
+    assert "registry-publication-strategy.md" in README.read_text(encoding="utf-8")
+    assert "registry-publication-strategy.md" in INSTALL_DOC.read_text(encoding="utf-8")
 
 
 def test_changelog_tracks_v010_release_without_registry_publication_claims() -> None:
@@ -119,6 +123,18 @@ def test_changelog_tracks_v010_release_without_registry_publication_claims() -> 
     ):
         assert forbidden not in changelog_lower
 
+    assert "registry publication strategy" in changelog_lower
+
+
+def test_registry_strategy_keeps_current_version_source_only() -> None:
+    text = REGISTRY_STRATEGY_DOC.read_text(encoding="utf-8").lower()
+
+    assert "current package metadata version: `0.1.0`" in text
+    assert "`v0.1.0` stays a github source-only release" in text
+    assert "no registry should backfill `0.1.0`" in text
+    assert "`0.1.1`" in text
+    assert "`0.2.0`" in text
+
 
 def test_package_metadata_points_to_public_repository() -> None:
     package = _package_json()
@@ -132,3 +148,12 @@ def test_package_metadata_points_to_public_repository() -> None:
         "Repository": PUBLIC_REPO,
         "Issues": ISSUES,
     }
+
+
+def test_package_includes_ci_policy_doc_but_excludes_workflow_internals() -> None:
+    package_files = set(_package_json()["files"])
+
+    assert "docs/ci-and-release-policy.md" in package_files
+    assert "docs/registry-publication-strategy.md" in package_files
+    assert ".github/dependabot.yml" not in package_files
+    assert not any(path.startswith(".github/workflows/") for path in package_files)

@@ -10,6 +10,9 @@ This file follows the spirit of Keep a Changelog and uses semantic version label
 
 - Community health files and contribution templates for the standalone public
   repository package surface.
+- Registry publication strategy covering GitHub source releases, future PyPI,
+  TestPyPI, npm launcher, and deferred GitHub Packages channels without
+  changing package version or publishing to a registry.
 
 ## [0.1.0] - 2026-06-12
 

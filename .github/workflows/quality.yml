@@ -1,0 +1,90 @@
+name: Quality
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+          - "3.11"
+          - "3.12"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6.0.3
+
+      - name: Set up Python
+        uses: actions/setup-python@v6.2.0
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install package with dev tools
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]"
+
+      - name: Run quality gates
+        run: python scripts/quality.py
+
+  release-smoke:
+    name: release-smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    needs:
+      - quality
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6.0.3
+
+      - name: Set up Python
+        uses: actions/setup-python@v6.2.0
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6.4.0
+        with:
+          node-version: "24"
+
+      - name: Install package with dev tools
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]"
+
+      - name: Clean generated release blockers
+        run: python scripts/release.py clean
+
+      - name: Run focused release tests
+        run: >
+          python -m pytest
+          tests/test_release_readiness.py
+          tests/test_release_manifest.py
+          tests/test_distribution_metadata.py
+          tests/test_docs_smoke.py
+          tests/test_workflow_safety.py
+          -q
+
+      - name: Validate release manifest
+        run: python scripts/release.py manifest --check
+
+      - name: Verify release candidate shape
+        run: python scripts/release.py verify
+
+      - name: Verify npm launcher package shape
+        run: npm pack --dry-run --json

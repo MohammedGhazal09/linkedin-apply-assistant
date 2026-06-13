@@ -6,6 +6,10 @@ This file is the canonical install matrix. The README keeps only a short quick s
 
 Current package metadata version: `0.1.0`.
 
+Registry package channels are not live yet. The future package-channel decision,
+approval gates, and no-backfill policy are documented in the
+[registry publication strategy](registry-publication-strategy.md).
+
 ## Prerequisites
 
 - Python 3.11 or newer.

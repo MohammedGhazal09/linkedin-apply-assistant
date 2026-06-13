@@ -99,6 +99,29 @@ def test_manifest_includes_phase26_community_health_files() -> None:
     assert categories["tests/test_community_health.py"] == "tests"
 
 
+def test_manifest_includes_phase28_ci_visibility_files() -> None:
+    manifest = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
+    categories = {item["path"]: item["category"] for item in manifest["files"]}
+
+    for path in (
+        ".github/workflows/quality.yml",
+        ".github/workflows/security.yml",
+        ".github/dependabot.yml",
+    ):
+        assert categories[path] == "ci"
+
+    assert categories["docs/ci-and-release-policy.md"] == "docs"
+    assert categories["tests/test_workflow_safety.py"] == "tests"
+
+
+def test_manifest_includes_phase29_registry_strategy_files() -> None:
+    manifest = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
+    categories = {item["path"]: item["category"] for item in manifest["files"]}
+
+    assert categories["docs/registry-publication-strategy.md"] == "docs"
+    assert categories["tests/test_registry_publication_strategy.py"] == "tests"
+
+
 def test_manifest_excludes_private_root_and_runtime_paths() -> None:
     manifest = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
     paths = {item["path"] for item in manifest["files"]}

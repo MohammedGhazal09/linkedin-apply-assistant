@@ -36,6 +36,9 @@
     {"path": ".github/ISSUE_TEMPLATE/feature_request.yml", "category": "community-template"},
     {"path": ".github/ISSUE_TEMPLATE/safety_compliance.yml", "category": "community-template"},
     {"path": ".github/PULL_REQUEST_TEMPLATE.md", "category": "community-template"},
+    {"path": ".github/dependabot.yml", "category": "ci"},
+    {"path": ".github/workflows/quality.yml", "category": "ci"},
+    {"path": ".github/workflows/security.yml", "category": "ci"},
     {"path": ".gitignore", "category": "config"},
     {"path": "CHANGELOG.md", "category": "docs"},
     {"path": "CODE_OF_CONDUCT.md", "category": "docs"},
@@ -56,7 +59,9 @@
     {"path": "docs/assist.md", "category": "docs"},
     {"path": "docs/browser-session.md", "category": "docs"},
     {"path": "docs/commands.md", "category": "docs"},
+    {"path": "docs/ci-and-release-policy.md", "category": "docs"},
     {"path": "docs/install-and-configuration.md", "category": "docs"},
+    {"path": "docs/registry-publication-strategy.md", "category": "docs"},
     {"path": "docs/reports.md", "category": "docs"},
     {"path": "docs/search.md", "category": "docs"},
     {"path": "docs/troubleshooting.md", "category": "docs"},
@@ -102,6 +107,7 @@
     {"path": "tests/test_quality_gate.py", "category": "tests"},
     {"path": "tests/test_release_manifest.py", "category": "tests"},
     {"path": "tests/test_release_readiness.py", "category": "tests"},
+    {"path": "tests/test_registry_publication_strategy.py", "category": "tests"},
     {"path": "tests/test_release_script.py", "category": "tests"},
     {"path": "tests/test_report_redaction.py", "category": "tests"},
     {"path": "tests/test_runtime_boundaries.py", "category": "tests"},
@@ -109,6 +115,7 @@
     {"path": "tests/test_safety_policy.py", "category": "tests"},
     {"path": "tests/test_search_workflow.py", "category": "tests"},
     {"path": "tests/test_selector_separation.py", "category": "tests"},
+    {"path": "tests/test_workflow_safety.py", "category": "tests"},
     {"path": "tests/test_workflow_foundation.py", "category": "tests"}
   ]
 }
