@@ -184,7 +184,7 @@ def test_quality_workflow_runtime_and_release_smoke_contract() -> None:
     assert post_test_clean["run"] == "python scripts/release.py clean"
 
     action_text = "\n".join(str(step.get("uses", "")) for step in _all_steps(config))
-    assert re.search(r"actions/checkout@v6(?:\.|$)", action_text)
+    assert re.search(r"actions/checkout@v7(?:\.|$)", action_text)
     assert re.search(r"actions/setup-python@v6(?:\.|$)", action_text)
     assert re.search(r"actions/setup-node@v6(?:\.|$)", action_text)
 
