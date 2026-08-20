@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - fix/audit-remediation-all-findings
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: read
