@@ -1,0 +1,101 @@
+name: Direct remediation transport
+
+on:
+  push:
+    branches:
+      - fix/audit-remediation-all-findings
+    paths:
+      - .github/workflows/direct-remediation-transport.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: direct-remediation-transport
+  cancel-in-progress: false
+
+jobs:
+  verify-and-replace:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Check out exact audited base
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          ref: 0536b1fc9f505469e08994a65e772a493d19b4ff
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: "3.12"
+
+      - name: Download and integrity-check direct patch
+        run: |
+          set -euo pipefail
+          base='https://filebin.net/laa-7c4b9d2e13a84f6ab08755c1e0b9a62f'
+          curl --fail --silent --show-error --retry 3 "$base/direct-audit-remediation.patch" -o /tmp/direct.patch
+          curl --fail --silent --show-error --retry 3 "$base/direct-audit-remediation.patch.sha256" -o /tmp/direct.patch.sha256
+          sed -i 's#  /mnt/data/direct-audit-remediation.patch#  /tmp/direct.patch#' /tmp/direct.patch.sha256
+          sha256sum -c /tmp/direct.patch.sha256
+          git apply --check /tmp/direct.patch
+          git apply --index /tmp/direct.patch
+          git diff --cached --check
+
+      - name: Enforce direct-tree scope
+        run: |
+          set -euo pipefail
+          files="$(git diff --cached --name-only)"
+          printf '%s\n' "$files"
+          test -n "$files"
+          printf '%s\n' "$files" | grep -q '^src/linkedin_apply_assistant/'
+          printf '%s\n' "$files" | grep -q '^tests/'
+          printf '%s\n' "$files" | grep -q '^docs/'
+          printf '%s\n' "$files" | grep -q '^install.ps1$'
+          printf '%s\n' "$files" | grep -q '^pyproject.toml$'
+          if printf '%s\n' "$files" | grep -Eq '(^|/)(_remediate_.*_20260820\.py|_run_audit_remediation_20260820\.py|_audit_remediation_probe\.txt|_transfer_probe\.txt)$|^\.github/workflows/(apply-audit-remediation|export-source|direct-remediation-transport)'; then
+            echo 'Temporary remediation scaffolding is forbidden in the resulting tree.' >&2
+            exit 1
+          fi
+
+      - name: Install the reviewed dependency closure
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          if test -f requirements.lock; then
+            python -m pip install --require-hashes -r requirements.lock
+            python -m pip install --no-deps --no-build-isolation -e .
+          else
+            python -m pip install -e '.[dev]'
+          fi
+          python -m playwright install --with-deps chromium
+
+      - name: Verify deterministic and Chromium behavior
+        run: |
+          set -euo pipefail
+          python -m compileall -q src tests scripts
+          python -m pytest tests -q -m 'not live'
+          python -m pytest tests/test_browser_e2e.py -q -m live
+          python -m ruff check --no-cache src tests scripts
+          python -m ruff format --check --no-cache src tests scripts
+          python -m mypy src/linkedin_apply_assistant
+          python -m coverage run --branch -m pytest tests -q -m 'not live'
+          python -m coverage report --show-missing --fail-under=80
+
+      - name: Verify repository and release contracts
+        run: |
+          set -euo pipefail
+          python scripts/quality.py
+          python scripts/release.py clean
+          python scripts/release.py manifest --check
+          python scripts/release.py verify
+          npm pack --dry-run --json
+
+      - name: Commit exact direct tree and replace PR branch
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'fix: directly remediate repository audit findings'
+          git push --force origin HEAD:refs/heads/fix/audit-remediation-all-findings

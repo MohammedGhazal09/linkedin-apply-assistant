@@ -1,0 +1,31 @@
+name: Export source for remediation workspace
+
+on:
+  push:
+    branches:
+      - fix/audit-remediation-all-findings
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+
+      - name: Create source archive
+        run: git archive --format=tar.gz --output=linkedin-apply-assistant-source.tar.gz HEAD
+
+      - name: Upload source archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: remediation-source
+          path: linkedin-apply-assistant-source.tar.gz
+          if-no-files-found: error
+          retention-days: 1

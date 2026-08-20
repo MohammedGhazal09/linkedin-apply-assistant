@@ -1,0 +1,107 @@
+name: Apply audit remediation v3
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - fix/audit-remediation-all-findings
+    paths:
+      - scripts/_remediate_finalize_20260820.py
+      - .github/workflows/apply-audit-remediation-v3.yml
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: apply-audit-remediation
+  cancel-in-progress: true
+
+jobs:
+  remediate-verify-promote:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/audit-remediation-all-findings
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install generation tooling
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "pip-tools>=7.4,<8"
+      - name: Build the final remediation tree
+        run: |
+          python scripts/_run_audit_remediation_20260820.py
+          python scripts/_remediate_hotfix_20260820.py
+          python scripts/_remediate_finalize_20260820.py
+      - name: Install locked dependencies and Chromium
+        run: |
+          python -m pip install --require-hashes -r requirements.lock
+          python -m pip install --no-deps -e .
+          python -m playwright install --with-deps chromium
+      - name: Format the final generated tree
+        run: python -m ruff format src tests
+      - name: Focused exploit and browser regression verification
+        run: |
+          python -m pytest tests/test_security_regressions.py -q
+          python -m pytest tests/test_browser_e2e.py -q -m live
+      - name: Full functional and static verification
+        run: |
+          python -m pytest tests -q
+          python -m ruff check --no-cache src tests
+          python -m ruff format --check --no-cache src tests
+          python -m mypy src/linkedin_apply_assistant
+          python scripts/quality.py
+      - name: Release, privacy, dependency, and package verification
+        run: |
+          python scripts/release.py clean
+          python scripts/release.py manifest --check
+          python scripts/release.py verify
+          npm pack --dry-run --json
+      - name: Commit the verified final tree
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          git commit -m "fix: remediate comprehensive repository audit"
+          git push origin HEAD:fix/audit-remediation-all-findings
+      - name: Update and promote pull request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cat > /tmp/pr-body.md <<'EOF'
+          ## Comprehensive repository audit remediation
+
+          This pull request consolidates the complete remediation into one verified change set.
+
+          ### Security and privacy
+          - hostname-only HTTPS origin trust with explicit approval for unknown application origins
+          - real Playwright integration shared with Chromium regression fixtures
+          - multi-step required-field blocking and a hard stop before final submission
+          - login/MFA/CAPTCHA/checkpoint/throttling/untrusted-origin termination
+          - versioned bounded config/job/Q&A schemas and workspace path confinement
+          - private atomic local writes, allowlisted report fields, escaped remote text, origin-only URL metadata, and SHA-256 integrity manifests
+          - conservative exact confirmation for sensitive application questions
+
+          ### Supply chain and operations
+          - immutable GitHub Action SHAs
+          - locked hashed dependency closure and dependency auditing
+          - safe tagged installer requiring archive SHA-256
+          - mutable PowerShell self-update execution removed
+          - cross-platform unit checks, real Chromium fixtures, type checks, CodeQL, dependency review, Gitleaks, release verification, npm package inspection, and Windows installer parsing
+
+          ### Product and legal clarity
+          - neutral display branding: **Job Apply Assistant**
+          - explicit non-affiliation notice while retaining historical package identifiers for compatibility
+          - concrete private vulnerability-reporting route and repository-hardening guidance
+
+          ### Verification
+          The promotion job created the final commit only after the focused exploit regressions, real Chromium fixtures, full pytest suite, Ruff checks, MyPy, package quality gate, release manifest/scan, dependency audit, and `npm pack --dry-run --json` succeeded. Permanent Quality and Security workflows repeat the relevant checks on this final commit.
+          EOF
+          gh pr edit 8 --repo MohammedGhazal09/linkedin-apply-assistant --body-file /tmp/pr-body.md
+          gh pr ready 8 --repo MohammedGhazal09/linkedin-apply-assistant
