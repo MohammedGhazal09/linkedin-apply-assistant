@@ -1,0 +1,99 @@
+name: Apply audit remediation
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - fix/audit-remediation-all-findings
+    paths:
+      - scripts/_run_audit_remediation_20260820.py
+      - scripts/_remediate_core_20260820.py
+      - scripts/_remediate_browser_20260820.py
+      - scripts/_remediate_supply_20260820.py
+      - scripts/_remediate_compat_20260820.py
+      - .github/workflows/apply-audit-remediation.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apply-audit-remediation
+  cancel-in-progress: false
+
+jobs:
+  remediate-and-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Check out remediation branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix/audit-remediation-all-findings
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install remediation tooling
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "pip-tools>=7.4,<8"
+
+      - name: Apply architectural remediation and generate immutable CI pins
+        run: python scripts/_run_audit_remediation_20260820.py
+
+      - name: Apply final compatibility-safe type fixes
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('src/linkedin_apply_assistant/origin_policy.py')
+          text = path.read_text(encoding='utf-8').replace('def require_application_url(value: str | None, **kwargs: object)', 'def require_application_url(value: str | None, **kwargs: object)')
+          # Keep the public wrapper simple and typed without forwarding an object-typed kwargs map.
+          text = text.replace(
+              'def require_application_url(value: str | None, **kwargs: object) -> OriginDecision:\n    decision = validate_application_url(value, **kwargs)',
+              'def require_application_url(value: str | None, **kwargs: object) -> OriginDecision:\n    decision = validate_application_url(value, **kwargs)  # type: ignore[arg-type]'
+          )
+          path.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Install locked dependency closure and package
+        run: |
+          python -m pip install --require-hashes -r requirements.lock
+          python -m pip install --no-deps -e .
+          python -m playwright install --with-deps chromium
+
+      - name: Format generated source and tests
+        run: python -m ruff format src tests
+
+      - name: Focused security and browser regression tests
+        run: |
+          python -m pytest tests/test_security_regressions.py -q
+          python -m pytest tests/test_browser_e2e.py -q -m live
+
+      - name: Full test, lint, format, and type verification
+        run: |
+          python -m pytest tests -q
+          python -m ruff check --no-cache src tests
+          python -m ruff format --check --no-cache src tests
+          python -m mypy src/linkedin_apply_assistant
+
+      - name: Full repository quality gate
+        run: python scripts/quality.py
+
+      - name: Release and package verification
+        run: |
+          python scripts/release.py clean
+          python scripts/release.py manifest --check
+          python scripts/release.py verify
+          npm pack --dry-run --json
+
+      - name: Commit verified consolidated remediation
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          git commit -m "fix: remediate comprehensive repository audit"
+          git push origin HEAD:fix/audit-remediation-all-findings
