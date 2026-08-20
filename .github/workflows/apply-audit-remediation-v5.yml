@@ -1,0 +1,112 @@
+name: Apply audit remediation v5
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - fix/audit-remediation-all-findings
+    paths:
+      - scripts/_remediate_release_compat_20260820.py
+      - .github/workflows/apply-audit-remediation-v5.yml
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: apply-audit-remediation
+  cancel-in-progress: true
+
+jobs:
+  remediate-verify-promote:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/audit-remediation-all-findings
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install generation tooling
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "pip-tools>=7.4,<8"
+      - name: Build the final remediation tree
+        run: |
+          python scripts/_run_audit_remediation_20260820.py
+          python scripts/_remediate_hotfix_20260820.py
+          python scripts/_remediate_finalize_20260820.py
+          python scripts/_remediate_final_compat_20260820.py
+          python scripts/_remediate_release_compat_20260820.py
+      - name: Install locked dependencies and Chromium
+        run: |
+          python -m pip install --require-hashes -r requirements.lock
+          python -m pip install --no-deps --no-build-isolation -e .
+          python -m playwright install --with-deps chromium
+      - name: Format final source and tests
+        run: python -m ruff format src tests
+      - name: Focused exploit and real-browser regressions
+        run: |
+          python -m pytest tests/test_security_regressions.py -q
+          python -m pytest tests/test_browser_e2e.py -q -m live
+      - name: Full repository verification
+        run: |
+          python -m pytest tests -q
+          python -m ruff check --no-cache src tests
+          python -m ruff format --check --no-cache src tests
+          python -m mypy src/linkedin_apply_assistant
+          python scripts/quality.py
+      - name: Release and package verification
+        run: |
+          python scripts/release.py clean
+          python scripts/release.py manifest --check
+          python scripts/release.py verify
+          npm pack --dry-run --json
+      - name: Commit verified final tree
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          git commit -m "fix: remediate comprehensive repository audit"
+          git push origin HEAD:fix/audit-remediation-all-findings
+      - name: Promote the single pull request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cat > /tmp/pr-body.md <<'EOF'
+          ## Comprehensive repository audit remediation
+
+          This single pull request replaces the unsafe browser, configuration, reporting, update, dependency, and CI boundaries identified by the repository-wide audit.
+
+          ### Browser and application-data security
+          - canonical HTTPS and hostname-only ATS trust; URL paths and queries cannot spoof a provider
+          - explicit approval for unknown external application origins before any private field or document write
+          - one production Playwright adapter shared with deterministic Chromium fixtures
+          - existing values preserved; hidden file controls supported; document type/size/path checks enforced
+          - every application step rescanned; unresolved required fields stop; only Next/Continue/Review may advance
+          - login, MFA, CAPTCHA, checkpoint, throttle, and untrusted-origin states terminate the bounded session
+          - final submission controls are detected for review but never clicked
+
+          ### Configuration, privacy, and integrity
+          - versioned bounded YAML/JSON/Q&A schemas with strict unknown-field handling
+          - canonical flat profile examples, safe blank/disabled Q&A examples, and sensitive-answer exact confirmation
+          - workspace path confinement and private runtime directories
+          - atomic private report/pending-state writes, escaped remote text, allowlisted report fields, origin-only persisted URLs, and SHA-256 integrity manifests
+
+          ### Supply chain, CI, and product clarity
+          - hashed dependency lock and dependency audit
+          - immutable GitHub Action commit pins
+          - cross-platform unit checks, real Chromium fixtures, MyPy, CodeQL, Dependency Review, Gitleaks, release verification, npm pack inspection, and Windows installer parsing
+          - installer restricted to an immutable tag/full commit and a user-supplied verified archive SHA-256; locked dependencies are installed before the package
+          - mutable PowerShell self-update execution removed; npm remains a transparent launcher only
+          - neutral **Job Apply Assistant** display branding and explicit non-affiliation notice while historical package identifiers remain for compatibility
+          - concrete private vulnerability-reporting and repository-hardening guidance
+
+          ### Verification
+          The final commit is created only after the focused exploit regressions, real Chromium fixtures, full pytest suite, Ruff, MyPy, the package quality gate, release manifest/scan, dependency audit, and `npm pack --dry-run --json` all pass in the same clean runner. Permanent Quality and Security workflows repeat the relevant checks on the committed tree.
+          EOF
+          gh pr edit 8 --repo MohammedGhazal09/linkedin-apply-assistant --body-file /tmp/pr-body.md
+          gh pr ready 8 --repo MohammedGhazal09/linkedin-apply-assistant
